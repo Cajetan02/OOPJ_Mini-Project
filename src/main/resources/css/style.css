@@ -1,0 +1,157 @@
+/* Root styling */
+.root {
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-background-color: #f5f5f5;
+}
+
+/* Header */
+.header {
+    -fx-background-color: linear-gradient(to right, #667eea, #764ba2);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 2);
+}
+
+.title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.section-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
+
+/* Buttons */
+.button {
+    -fx-padding: 8 20;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-background-radius: 5;
+}
+
+.btn-primary {
+    -fx-background-color: #667eea;
+    -fx-text-fill: white;
+}
+
+.btn-primary:hover {
+    -fx-background-color: #5568d3;
+}
+
+.btn-success {
+    -fx-background-color: #48bb78;
+    -fx-text-fill: white;
+}
+
+.btn-success:hover {
+    -fx-background-color: #38a169;
+}
+
+.btn-danger {
+    -fx-background-color: #f56565;
+    -fx-text-fill: white;
+}
+
+.btn-danger:hover {
+    -fx-background-color: #e53e3e;
+}
+
+/* Text Fields */
+.text-field {
+    -fx-padding: 8;
+    -fx-font-size: 14px;
+    -fx-background-color: white;
+    -fx-border-color: #cbd5e0;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+.text-field:focused {
+    -fx-border-color: #667eea;
+    -fx-border-width: 2;
+}
+
+/* ComboBox */
+.combo-box {
+    -fx-background-color: white;
+    -fx-border-color: #cbd5e0;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+/* DatePicker */
+.date-picker {
+    -fx-background-color: white;
+}
+
+/* Labels */
+.label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #2d3748;
+}
+
+/* TableView */
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+.table-view .column-header {
+    -fx-background-color: #667eea;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-padding: 10;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #667eea;
+}
+
+.table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: transparent;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #f7fafc;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #bee3f8;
+    -fx-text-fill: #1a202c;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #e6fffa;
+}
+
+/* Tab Pane */
+.tab-pane {
+    -fx-background-color: white;
+}
+
+.tab {
+    -fx-background-color: #e2e8f0;
+    -fx-padding: 10 20;
+}
+
+.tab:selected {
+    -fx-background-color: white;
+    -fx-border-color: #667eea;
+    -fx-border-width: 0 0 3 0;
+}
+
+.tab .tab-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+/* Separator */
+.separator {
+    -fx-background-color: #e2e8f0;
+}

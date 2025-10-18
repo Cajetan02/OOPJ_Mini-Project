@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx" 
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.sportsmanager.controller.MainController"
+            prefHeight="700.0" prefWidth="1000.0">
+    
+    <top>
+        <VBox styleClass="header">
+            <Label text="Sports Event Manager" styleClass="title"/>
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+        </VBox>
+    </top>
+
+    <center>
+        <TabPane tabClosingPolicy="UNAVAILABLE">
+            
+            <!-- TEAMS TAB -->
+            <Tab text="Teams">
+                <VBox spacing="15">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    
+                    <!-- Team Input Form -->
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Team Name:" minWidth="80"/>
+                        <TextField fx:id="teamNameField" promptText="Enter team name" prefWidth="200"/>
+                        
+                        <Label text="Coach:" minWidth="60"/>
+                        <TextField fx:id="coachField" promptText="Enter coach name" prefWidth="200"/>
+                        
+                        <Button text="Add Team" onAction="#handleAddTeam" styleClass="btn-primary"/>
+                        <Button text="Delete Selected" onAction="#handleDeleteTeam" styleClass="btn-danger"/>
+                    </HBox>
+                    
+                    <!-- Teams Table -->
+                    <TableView fx:id="teamsTable" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="teamIdCol" text="ID" prefWidth="50"/>
+                            <TableColumn fx:id="teamNameCol" text="Team Name" prefWidth="250"/>
+                            <TableColumn fx:id="coachCol" text="Coach" prefWidth="250"/>
+                            <TableColumn fx:id="winsCol" text="Wins" prefWidth="100"/>
+                            <TableColumn fx:id="lossesCol" text="Losses" prefWidth="100"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+            </Tab>
+
+            <!-- MATCHES TAB -->
+            <Tab text="Matches">
+                <VBox spacing="15">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    
+                    <!-- Schedule Match Form -->
+                    <VBox spacing="10">
+                        <Label text="Schedule New Match" styleClass="section-title"/>
+                        
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="Team 1:" minWidth="70"/>
+                            <ComboBox fx:id="team1Combo" promptText="Select Team 1" prefWidth="180"/>
+                            
+                            <Label text="Team 2:" minWidth="70"/>
+                            <ComboBox fx:id="team2Combo" promptText="Select Team 2" prefWidth="180"/>
+                            
+                            <Label text="Date:" minWidth="50"/>
+                            <DatePicker fx:id="matchDatePicker" prefWidth="150"/>
+                        </HBox>
+                        
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="Location:" minWidth="70"/>
+                            <TextField fx:id="locationField" promptText="Enter location" prefWidth="300"/>
+                            <Button text="Schedule Match" onAction="#handleAddMatch" styleClass="btn-primary"/>
+                        </HBox>
+                    </VBox>
+                    
+                    <Separator/>
+                    
+                    <!-- Update Result Form -->
+                    <VBox spacing="10">
+                        <Label text="Update Match Result" styleClass="section-title"/>
+                        
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="Select match from table below, then enter scores:"/>
+                        </HBox>
+                        
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="Team 1 Score:" minWidth="100"/>
+                            <TextField fx:id="score1Field" promptText="0" prefWidth="80"/>
+                            
+                            <Label text="Team 2 Score:" minWidth="100"/>
+                            <TextField fx:id="score2Field" promptText="0" prefWidth="80"/>
+                            
+                            <Button text="Update Result" onAction="#handleUpdateResult" styleClass="btn-success"/>
+                            <Button text="Delete Match" onAction="#handleDeleteMatch" styleClass="btn-danger"/>
+                        </HBox>
+                    </VBox>
+                    
+                    <Separator/>
+                    
+                    <!-- Matches Table -->
+                    <TableView fx:id="matchesTable" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="matchIdCol" text="ID" prefWidth="40"/>
+                            <TableColumn fx:id="team1Col" text="Team 1" prefWidth="150"/>
+                            <TableColumn fx:id="team2Col" text="Team 2" prefWidth="150"/>
+                            <TableColumn fx:id="dateCol" text="Date" prefWidth="100"/>
+                            <TableColumn fx:id="locationCol" text="Location" prefWidth="120"/>
+                            <TableColumn fx:id="score1Col" text="Score 1" prefWidth="70"/>
+                            <TableColumn fx:id="score2Col" text="Score 2" prefWidth="70"/>
+                            <TableColumn fx:id="statusCol" text="Status" prefWidth="100"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+            </Tab>
+
+        </TabPane>
+    </center>
+
+</BorderPane>

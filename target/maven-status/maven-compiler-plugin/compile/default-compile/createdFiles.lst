@@ -1,0 +1,7 @@
+com/sportsmanager/model/Team.class
+com/sportsmanager/dao/MatchDAO.class
+com/sportsmanager/dao/DatabaseConnection.class
+com/sportsmanager/model/Match.class
+com/sportsmanager/Main.class
+com/sportsmanager/controller/MainController.class
+com/sportsmanager/dao/TeamDAO.class

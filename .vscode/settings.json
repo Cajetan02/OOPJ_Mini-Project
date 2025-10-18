@@ -1,0 +1,7 @@
+{
+  "css.lint.vendorPrefix": "ignore",
+  "css.lint.unknownProperties": "ignore",
+  "files.associations": {
+    "*.css": "css"
+  }
+}
