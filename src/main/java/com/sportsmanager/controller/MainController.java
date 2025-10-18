@@ -84,6 +84,11 @@ public class MainController {
         setupStandingsTable();
         setupMatchesTable();
 
+        // CRITICAL FIX: Populate scoring type combo
+        scoringTypeCombo.setItems(FXCollections.observableArrayList(
+                "GOALS", "POINTS", "RUNS", "SETS"
+        ));
+
         loadSports();
     }
 
@@ -123,6 +128,7 @@ public class MainController {
             showAlert("Success", "Sport added successfully!");
         } catch (Exception e) {
             showAlert("Error", "Failed to add sport: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -140,6 +146,7 @@ public class MainController {
             showAlert("Success", "Sport deleted successfully!");
         } catch (Exception e) {
             showAlert("Error", "Failed to delete sport: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -150,6 +157,7 @@ public class MainController {
             updateSportCombos();
         } catch (Exception e) {
             showAlert("Error", "Failed to load sports: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -166,9 +174,16 @@ public class MainController {
                 teamSportCombo.setValue(selectedSport);
                 matchSportCombo.setValue(selectedSport);
                 standingsSportCombo.setValue(selectedSport);
+
+                // Auto-load teams and matches for first sport
+                loadTeamsForSport(selectedSport.getId());
+                loadTeamsForMatchCombos(selectedSport.getId());
+                loadMatchesForSport(selectedSport.getId());
+                loadStandings(selectedSport.getId());
             }
         } catch (Exception e) {
             showAlert("Error", "Failed to update sport filters: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -218,10 +233,12 @@ public class MainController {
             Team team = new Team(name, coach, sport.getId());
             teamDAO.addTeam(team);
             loadTeamsForSport(sport.getId());
+            loadTeamsForMatchCombos(sport.getId());
             clearTeamFields();
             showAlert("Success", "Team added successfully!");
         } catch (Exception e) {
             showAlert("Error", "Failed to add team: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -238,10 +255,12 @@ public class MainController {
             Sport sport = teamSportCombo.getValue();
             if (sport != null) {
                 loadTeamsForSport(sport.getId());
+                loadTeamsForMatchCombos(sport.getId());
             }
             showAlert("Success", "Team deleted successfully!");
         } catch (Exception e) {
             showAlert("Error", "Failed to delete team: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -270,6 +289,7 @@ public class MainController {
             teamsTable.setItems(teams);
         } catch (Exception e) {
             showAlert("Error", "Failed to load teams: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -280,6 +300,7 @@ public class MainController {
             team2Combo.setItems(teams);
         } catch (Exception e) {
             showAlert("Error", "Failed to load teams for matches: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -326,6 +347,8 @@ public class MainController {
         Sport sport = standingsSportCombo.getValue();
         if (sport != null) {
             loadStandings(sport.getId());
+        } else {
+            showAlert("Info", "Please select a sport first!");
         }
     }
 
@@ -335,6 +358,7 @@ public class MainController {
             standingsTable.setItems(teams);
         } catch (Exception e) {
             showAlert("Error", "Failed to load standings: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -384,6 +408,7 @@ public class MainController {
             showAlert("Success", "Match scheduled successfully!");
         } catch (Exception e) {
             showAlert("Error", "Failed to add match: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -423,11 +448,13 @@ public class MainController {
                 loadStandings(sport.getId());
             }
 
+            clearMatchFields();
             showAlert("Success", "Match result updated! Standings refreshed.");
         } catch (NumberFormatException e) {
             showAlert("Error", "Please enter valid scores!");
         } catch (Exception e) {
             showAlert("Error", "Failed to update result: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -448,6 +475,7 @@ public class MainController {
             showAlert("Success", "Match deleted successfully!");
         } catch (Exception e) {
             showAlert("Error", "Failed to delete match: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -467,6 +495,7 @@ public class MainController {
             matchesTable.setItems(matches);
         } catch (Exception e) {
             showAlert("Error", "Failed to load matches: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

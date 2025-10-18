@@ -13,19 +13,31 @@ public class DatabaseConnection {
         try (Connection conn = getConnection();
              Statement stmt = conn.createStatement()) {
 
+            // Drop existing tables to ensure clean slate
+            System.out.println("Initializing database...");
+
+            // Enable foreign keys
+            stmt.execute("PRAGMA foreign_keys = ON");
+
+            // Drop tables if they exist (in reverse order due to foreign keys)
+            stmt.execute("DROP TABLE IF EXISTS matches");
+            stmt.execute("DROP TABLE IF EXISTS teams");
+            stmt.execute("DROP TABLE IF EXISTS sports");
+
             // Create Sports table
             String sportsTable = """
-                CREATE TABLE IF NOT EXISTS sports (
+                CREATE TABLE sports (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT NOT NULL UNIQUE,
                     scoring_type TEXT NOT NULL
                 )
             """;
             stmt.execute(sportsTable);
+            System.out.println("✓ Sports table created");
 
             // Create Teams table with sport_id
             String teamsTable = """
-                CREATE TABLE IF NOT EXISTS teams (
+                CREATE TABLE teams (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT NOT NULL,
                     coach TEXT NOT NULL,
@@ -41,10 +53,11 @@ public class DatabaseConnection {
                 )
             """;
             stmt.execute(teamsTable);
+            System.out.println("✓ Teams table created");
 
             // Create Matches table
             String matchesTable = """
-                CREATE TABLE IF NOT EXISTS matches (
+                CREATE TABLE matches (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     team1_name TEXT NOT NULL,
                     team2_name TEXT NOT NULL,
@@ -54,26 +67,22 @@ public class DatabaseConnection {
                     team2_score INTEGER DEFAULT 0,
                     status TEXT DEFAULT 'Scheduled',
                     sport_id INTEGER NOT NULL,
-                    FOREIGN KEY (team1_name) REFERENCES teams(name),
-                    FOREIGN KEY (team2_name) REFERENCES teams(name),
                     FOREIGN KEY (sport_id) REFERENCES sports(id) ON DELETE CASCADE
                 )
             """;
             stmt.execute(matchesTable);
+            System.out.println("✓ Matches table created");
 
-            // Insert default sports if table is empty
-            String checkSports = "SELECT COUNT(*) as count FROM sports";
-            ResultSet rs = stmt.executeQuery(checkSports);
-            if (rs.next() && rs.getInt("count") == 0) {
-                stmt.execute("INSERT INTO sports (name, scoring_type) VALUES ('Football', 'GOALS')");
-                stmt.execute("INSERT INTO sports (name, scoring_type) VALUES ('Basketball', 'POINTS')");
-                stmt.execute("INSERT INTO sports (name, scoring_type) VALUES ('Cricket', 'RUNS')");
-                stmt.execute("INSERT INTO sports (name, scoring_type) VALUES ('Tennis', 'SETS')");
-                System.out.println("Default sports added!");
-            }
+            // Insert default sports
+            stmt.execute("INSERT INTO sports (name, scoring_type) VALUES ('Football', 'GOALS')");
+            stmt.execute("INSERT INTO sports (name, scoring_type) VALUES ('Basketball', 'POINTS')");
+            stmt.execute("INSERT INTO sports (name, scoring_type) VALUES ('Cricket', 'RUNS')");
+            stmt.execute("INSERT INTO sports (name, scoring_type) VALUES ('Tennis', 'SETS')");
+            System.out.println("✓ Default sports added!");
 
             System.out.println("Database initialized successfully!");
         } catch (SQLException e) {
+            System.err.println("Database initialization failed!");
             e.printStackTrace();
         }
     }

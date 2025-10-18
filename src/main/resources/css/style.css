@@ -10,7 +10,7 @@
 
 /* Header - Gradient with neon colors */
 .header {
-    -fx-background-color: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #667eea 0%, #764ba2 50%, #f093fb 100%);
     -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.4), 15, 0, 0, 5);
     -fx-padding: 25;
 }
@@ -45,60 +45,59 @@
     -fx-background-radius: 8;
     -fx-border-radius: 8;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);
-    -fx-transition: all 0.3s ease;
 }
 
 .btn-primary {
-    -fx-background-color: linear-gradient(to bottom, #667eea, #5568d3);
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #667eea, #5568d3);
     -fx-text-fill: white;
     -fx-border-color: #667eea;
     -fx-border-width: 2;
 }
 
 .btn-primary:hover {
-    -fx-background-color: linear-gradient(to bottom, #7c8ff5, #667eea);
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #7c8ff5, #667eea);
     -fx-scale-x: 1.05;
     -fx-scale-y: 1.05;
     -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.6), 15, 0, 0, 3);
 }
 
 .btn-success {
-    -fx-background-color: linear-gradient(to bottom, #48bb78, #38a169);
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #48bb78, #38a169);
     -fx-text-fill: white;
     -fx-border-color: #48bb78;
     -fx-border-width: 2;
 }
 
 .btn-success:hover {
-    -fx-background-color: linear-gradient(to bottom, #5cd68f, #48bb78);
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #5cd68f, #48bb78);
     -fx-scale-x: 1.05;
     -fx-scale-y: 1.05;
     -fx-effect: dropshadow(gaussian, rgba(72, 187, 120, 0.6), 15, 0, 0, 3);
 }
 
 .btn-danger {
-    -fx-background-color: linear-gradient(to bottom, #f56565, #e53e3e);
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #f56565, #e53e3e);
     -fx-text-fill: white;
     -fx-border-color: #f56565;
     -fx-border-width: 2;
 }
 
 .btn-danger:hover {
-    -fx-background-color: linear-gradient(to bottom, #ff7a7a, #f56565);
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #ff7a7a, #f56565);
     -fx-scale-x: 1.05;
     -fx-scale-y: 1.05;
     -fx-effect: dropshadow(gaussian, rgba(245, 101, 101, 0.6), 15, 0, 0, 3);
 }
 
 .btn-warning {
-    -fx-background-color: linear-gradient(to bottom, #ed8936, #dd6b20);
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #ed8936, #dd6b20);
     -fx-text-fill: white;
     -fx-border-color: #ed8936;
     -fx-border-width: 2;
 }
 
 .btn-warning:hover {
-    -fx-background-color: linear-gradient(to bottom, #ff9f4b, #ed8936);
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #ff9f4b, #ed8936);
     -fx-effect: dropshadow(gaussian, rgba(237, 137, 54, 0.6), 15, 0, 0, 3);
 }
 
@@ -124,11 +123,6 @@
 
 .text-field:hover {
     -fx-border-color: #505050;
-}
-
-/* Prompt text color */
-.text-field .text {
-    -fx-fill: #ffffff;
 }
 
 /* ==================
@@ -200,7 +194,7 @@
 }
 
 .table-view .column-header {
-    -fx-background-color: linear-gradient(to bottom, #667eea, #5568d3);
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #667eea, #5568d3);
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-font-size: 14px;
@@ -228,7 +222,7 @@
 }
 
 .table-row-cell:selected {
-    -fx-background-color: linear-gradient(to right, #667eea, #764ba2);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 0%, #667eea, #764ba2);
     -fx-text-fill: white;
 }
 
@@ -272,7 +266,7 @@
 }
 
 .tab:selected {
-    -fx-background-color: linear-gradient(to bottom, #667eea, #5568d3);
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #667eea, #5568d3);
     -fx-border-color: #667eea;
     -fx-border-width: 2 2 0 2;
 }
@@ -357,7 +351,7 @@
 }
 
 .standings-table .table-row-cell:filled:selected {
-    -fx-background-color: linear-gradient(to right, #48bb78, #38a169);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 0%, #48bb78, #38a169);
 }
 
 /* Position badges */
