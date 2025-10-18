@@ -12,9 +12,10 @@ public class Match {
     private final IntegerProperty team1Score;
     private final IntegerProperty team2Score;
     private final StringProperty status;
+    private final IntegerProperty sportId;
 
-    public Match(int id, String team1Name, String team2Name, LocalDate matchDate, 
-                 String location, int team1Score, int team2Score, String status) {
+    public Match(int id, String team1Name, String team2Name, LocalDate matchDate,
+                 String location, int team1Score, int team2Score, String status, int sportId) {
         this.id = new SimpleIntegerProperty(id);
         this.team1Name = new SimpleStringProperty(team1Name);
         this.team2Name = new SimpleStringProperty(team2Name);
@@ -23,10 +24,11 @@ public class Match {
         this.team1Score = new SimpleIntegerProperty(team1Score);
         this.team2Score = new SimpleIntegerProperty(team2Score);
         this.status = new SimpleStringProperty(status);
+        this.sportId = new SimpleIntegerProperty(sportId);
     }
 
-    public Match(String team1Name, String team2Name, LocalDate matchDate, String location) {
-        this(0, team1Name, team2Name, matchDate, location, 0, 0, "Scheduled");
+    public Match(String team1Name, String team2Name, LocalDate matchDate, String location, int sportId) {
+        this(0, team1Name, team2Name, matchDate, location, 0, 0, "Scheduled", sportId);
     }
 
     // ID
@@ -68,4 +70,9 @@ public class Match {
     public String getStatus() { return status.get(); }
     public void setStatus(String value) { status.set(value); }
     public StringProperty statusProperty() { return status; }
+
+    // Sport ID
+    public int getSportId() { return sportId.get(); }
+    public void setSportId(int value) { sportId.set(value); }
+    public IntegerProperty sportIdProperty() { return sportId; }
 }

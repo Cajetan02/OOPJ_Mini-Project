@@ -10,15 +10,16 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         DatabaseConnection.initializeDatabase();
-        
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/main.fxml"));
-        Scene scene = new Scene(loader.load(), 1000, 700);
-    scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-        
-        primaryStage.setTitle("Sports Event Manager");
+        Scene scene = new Scene(loader.load(), 1400, 800);
+        scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+
+        primaryStage.setTitle("🏆 Sports Event Manager - Multi-Sport Tournament System");
         primaryStage.setScene(scene);
+        primaryStage.setMaximized(true); // Start maximized for better view
         primaryStage.show();
-        // Helpful log when running headless/Xvfb so we can see UI reached show()
+
         System.out.println("UI shown: primaryStage displayed");
     }
 

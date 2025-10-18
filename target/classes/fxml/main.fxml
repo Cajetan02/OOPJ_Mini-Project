@@ -4,14 +4,16 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<BorderPane xmlns="http://javafx.com/javafx" 
+<BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.sportsmanager.controller.MainController"
-            prefHeight="700.0" prefWidth="1000.0">
-    
+            prefHeight="800.0" prefWidth="1400.0"
+            styleClass="root">
+
     <top>
         <VBox styleClass="header">
-            <Label text="Sports Event Manager" styleClass="title"/>
+            <Label text="🏆 Sports Event Manager" styleClass="title"/>
+            <Label text="Multi-Sport Tournament Management System" styleClass="subtitle"/>
             <padding>
                 <Insets top="20" right="20" bottom="20" left="20"/>
             </padding>
@@ -20,103 +22,210 @@
 
     <center>
         <TabPane tabClosingPolicy="UNAVAILABLE">
-            
-            <!-- TEAMS TAB -->
-            <Tab text="Teams">
-                <VBox spacing="15">
+
+            <!-- SPORTS SELECTION TAB -->
+            <Tab text="🎯 Sports">
+                <VBox spacing="20" styleClass="card">
                     <padding>
                         <Insets top="20" right="20" bottom="20" left="20"/>
                     </padding>
-                    
-                    <!-- Team Input Form -->
-                    <HBox spacing="10" alignment="CENTER_LEFT">
-                        <Label text="Team Name:" minWidth="80"/>
-                        <TextField fx:id="teamNameField" promptText="Enter team name" prefWidth="200"/>
-                        
-                        <Label text="Coach:" minWidth="60"/>
-                        <TextField fx:id="coachField" promptText="Enter coach name" prefWidth="200"/>
-                        
-                        <Button text="Add Team" onAction="#handleAddTeam" styleClass="btn-primary"/>
-                        <Button text="Delete Selected" onAction="#handleDeleteTeam" styleClass="btn-danger"/>
+
+                    <Label text="Manage Sports" styleClass="section-title"/>
+
+                    <!-- Add Sport Form -->
+                    <HBox spacing="15" alignment="CENTER_LEFT">
+                        <Label text="Sport Name:" minWidth="100"/>
+                        <TextField fx:id="sportNameField" promptText="e.g., Football" prefWidth="200"/>
+
+                        <Label text="Scoring:" minWidth="80"/>
+                        <ComboBox fx:id="scoringTypeCombo" promptText="Select Type" prefWidth="150"/>
+
+                        <Button text="Add Sport" onAction="#handleAddSport" styleClass="btn-primary"/>
+                        <Button text="Delete" onAction="#handleDeleteSport" styleClass="btn-danger"/>
                     </HBox>
-                    
+
+                    <Separator/>
+
+                    <!-- Sports Table -->
+                    <TableView fx:id="sportsTable" VBox.vgrow="ALWAYS" prefHeight="400">
+                        <columns>
+                            <TableColumn fx:id="sportIdCol" text="ID" prefWidth="60"/>
+                            <TableColumn fx:id="sportNameCol" text="Sport Name" prefWidth="300"/>
+                            <TableColumn fx:id="scoringTypeCol" text="Scoring Type" prefWidth="200"/>
+                        </columns>
+                    </TableView>
+
+                    <Label text="💡 Tip: Select a sport above, then go to Teams/Matches tabs" styleClass="subtitle"/>
+                </VBox>
+            </Tab>
+
+            <!-- TEAMS TAB -->
+            <Tab text="👥 Teams">
+                <VBox spacing="20">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+
+                    <!-- Sport Filter -->
+                    <HBox spacing="15" alignment="CENTER_LEFT" styleClass="card">
+                        <padding>
+                            <Insets top="15" right="15" bottom="15" left="15"/>
+                        </padding>
+                        <Label text="🏅 Select Sport:" styleClass="section-title"/>
+                        <ComboBox fx:id="teamSportCombo" prefWidth="200" onAction="#handleSportFilterTeams"/>
+                        <Button text="Show Standings" onAction="#handleShowStandings" styleClass="btn-warning"/>
+                    </HBox>
+
+                    <!-- Team Input Form -->
+                    <VBox spacing="15" styleClass="card">
+                        <padding>
+                            <Insets top="15" right="15" bottom="15" left="15"/>
+                        </padding>
+                        <Label text="Add New Team" styleClass="section-title"/>
+                        <HBox spacing="15" alignment="CENTER_LEFT">
+                            <Label text="Team Name:" minWidth="100"/>
+                            <TextField fx:id="teamNameField" promptText="Enter team name" prefWidth="250"/>
+
+                            <Label text="Coach:" minWidth="80"/>
+                            <TextField fx:id="coachField" promptText="Enter coach name" prefWidth="250"/>
+
+                            <Button text="Add Team" onAction="#handleAddTeam" styleClass="btn-primary"/>
+                            <Button text="Delete" onAction="#handleDeleteTeam" styleClass="btn-danger"/>
+                        </HBox>
+                    </VBox>
+
                     <!-- Teams Table -->
-                    <TableView fx:id="teamsTable" VBox.vgrow="ALWAYS">
+                    <TableView fx:id="teamsTable" VBox.vgrow="ALWAYS" prefHeight="400">
                         <columns>
                             <TableColumn fx:id="teamIdCol" text="ID" prefWidth="50"/>
-                            <TableColumn fx:id="teamNameCol" text="Team Name" prefWidth="250"/>
-                            <TableColumn fx:id="coachCol" text="Coach" prefWidth="250"/>
-                            <TableColumn fx:id="winsCol" text="Wins" prefWidth="100"/>
-                            <TableColumn fx:id="lossesCol" text="Losses" prefWidth="100"/>
+                            <TableColumn fx:id="teamNameCol" text="Team Name" prefWidth="200"/>
+                            <TableColumn fx:id="coachCol" text="Coach" prefWidth="180"/>
+                            <TableColumn fx:id="winsCol" text="W" prefWidth="60"/>
+                            <TableColumn fx:id="drawsCol" text="D" prefWidth="60"/>
+                            <TableColumn fx:id="lossesCol" text="L" prefWidth="60"/>
+                            <TableColumn fx:id="pointsCol" text="Pts" prefWidth="70"/>
+                            <TableColumn fx:id="goalsForCol" text="GF" prefWidth="70"/>
+                            <TableColumn fx:id="goalsAgainstCol" text="GA" prefWidth="70"/>
+                            <TableColumn fx:id="goalDiffCol" text="GD" prefWidth="70"/>
                         </columns>
                     </TableView>
                 </VBox>
             </Tab>
 
-            <!-- MATCHES TAB -->
-            <Tab text="Matches">
-                <VBox spacing="15">
+            <!-- STANDINGS TAB -->
+            <Tab text="🏆 Standings">
+                <VBox spacing="20">
                     <padding>
                         <Insets top="20" right="20" bottom="20" left="20"/>
                     </padding>
-                    
+
+                    <!-- Sport Filter -->
+                    <HBox spacing="15" alignment="CENTER_LEFT" styleClass="card">
+                        <padding>
+                            <Insets top="15" right="15" bottom="15" left="15"/>
+                        </padding>
+                        <Label text="🏅 Select Sport:" styleClass="section-title"/>
+                        <ComboBox fx:id="standingsSportCombo" prefWidth="200" onAction="#handleLoadStandings"/>
+                        <Button text="Refresh" onAction="#handleLoadStandings" styleClass="btn-success"/>
+                    </HBox>
+
+                    <!-- Standings Table -->
+                    <TableView fx:id="standingsTable" VBox.vgrow="ALWAYS" prefHeight="500" styleClass="standings-table">
+                        <columns>
+                            <TableColumn fx:id="positionCol" text="Pos" prefWidth="60"/>
+                            <TableColumn fx:id="standTeamNameCol" text="Team" prefWidth="250"/>
+                            <TableColumn fx:id="playedCol" text="P" prefWidth="60"/>
+                            <TableColumn fx:id="standWinsCol" text="W" prefWidth="60"/>
+                            <TableColumn fx:id="standDrawsCol" text="D" prefWidth="60"/>
+                            <TableColumn fx:id="standLossesCol" text="L" prefWidth="60"/>
+                            <TableColumn fx:id="standGoalsForCol" text="GF" prefWidth="80"/>
+                            <TableColumn fx:id="standGoalsAgainstCol" text="GA" prefWidth="80"/>
+                            <TableColumn fx:id="standGoalDiffCol" text="GD" prefWidth="80"/>
+                            <TableColumn fx:id="standPointsCol" text="Points" prefWidth="100"/>
+                        </columns>
+                    </TableView>
+
+                    <Label text="📊 Teams are sorted by Points, then Goal Difference" styleClass="subtitle"/>
+                </VBox>
+            </Tab>
+
+            <!-- MATCHES TAB -->
+            <Tab text="⚽ Matches">
+                <VBox spacing="20">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+
+                    <!-- Sport Filter -->
+                    <HBox spacing="15" alignment="CENTER_LEFT" styleClass="card">
+                        <padding>
+                            <Insets top="15" right="15" bottom="15" left="15"/>
+                        </padding>
+                        <Label text="🏅 Select Sport:" styleClass="section-title"/>
+                        <ComboBox fx:id="matchSportCombo" prefWidth="200" onAction="#handleSportFilterMatches"/>
+                    </HBox>
+
                     <!-- Schedule Match Form -->
-                    <VBox spacing="10">
+                    <VBox spacing="15" styleClass="card">
+                        <padding>
+                            <Insets top="15" right="15" bottom="15" left="15"/>
+                        </padding>
                         <Label text="Schedule New Match" styleClass="section-title"/>
-                        
-                        <HBox spacing="10" alignment="CENTER_LEFT">
-                            <Label text="Team 1:" minWidth="70"/>
-                            <ComboBox fx:id="team1Combo" promptText="Select Team 1" prefWidth="180"/>
-                            
-                            <Label text="Team 2:" minWidth="70"/>
-                            <ComboBox fx:id="team2Combo" promptText="Select Team 2" prefWidth="180"/>
-                            
-                            <Label text="Date:" minWidth="50"/>
+
+                        <HBox spacing="15" alignment="CENTER_LEFT">
+                            <Label text="Team 1:" minWidth="80"/>
+                            <ComboBox fx:id="team1Combo" promptText="Select Team 1" prefWidth="200"/>
+
+                            <Label text="Team 2:" minWidth="80"/>
+                            <ComboBox fx:id="team2Combo" promptText="Select Team 2" prefWidth="200"/>
+
+                            <Label text="Date:" minWidth="60"/>
                             <DatePicker fx:id="matchDatePicker" prefWidth="150"/>
                         </HBox>
-                        
-                        <HBox spacing="10" alignment="CENTER_LEFT">
-                            <Label text="Location:" minWidth="70"/>
-                            <TextField fx:id="locationField" promptText="Enter location" prefWidth="300"/>
+
+                        <HBox spacing="15" alignment="CENTER_LEFT">
+                            <Label text="Location:" minWidth="80"/>
+                            <TextField fx:id="locationField" promptText="Enter location" prefWidth="350"/>
                             <Button text="Schedule Match" onAction="#handleAddMatch" styleClass="btn-primary"/>
                         </HBox>
                     </VBox>
-                    
+
                     <Separator/>
-                    
+
                     <!-- Update Result Form -->
-                    <VBox spacing="10">
+                    <VBox spacing="15" styleClass="card">
+                        <padding>
+                            <Insets top="15" right="15" bottom="15" left="15"/>
+                        </padding>
                         <Label text="Update Match Result" styleClass="section-title"/>
-                        
-                        <HBox spacing="10" alignment="CENTER_LEFT">
-                            <Label text="Select match from table below, then enter scores:"/>
-                        </HBox>
-                        
-                        <HBox spacing="10" alignment="CENTER_LEFT">
-                            <Label text="Team 1 Score:" minWidth="100"/>
-                            <TextField fx:id="score1Field" promptText="0" prefWidth="80"/>
-                            
-                            <Label text="Team 2 Score:" minWidth="100"/>
-                            <TextField fx:id="score2Field" promptText="0" prefWidth="80"/>
-                            
+
+                        <Label text="Select a match from table below, then enter scores:"/>
+
+                        <HBox spacing="15" alignment="CENTER_LEFT">
+                            <Label text="Team 1 Score:" minWidth="120"/>
+                            <TextField fx:id="score1Field" promptText="0" prefWidth="100"/>
+
+                            <Label text="Team 2 Score:" minWidth="120"/>
+                            <TextField fx:id="score2Field" promptText="0" prefWidth="100"/>
+
                             <Button text="Update Result" onAction="#handleUpdateResult" styleClass="btn-success"/>
                             <Button text="Delete Match" onAction="#handleDeleteMatch" styleClass="btn-danger"/>
                         </HBox>
                     </VBox>
-                    
+
                     <Separator/>
-                    
+
                     <!-- Matches Table -->
-                    <TableView fx:id="matchesTable" VBox.vgrow="ALWAYS">
+                    <TableView fx:id="matchesTable" VBox.vgrow="ALWAYS" prefHeight="300">
                         <columns>
-                            <TableColumn fx:id="matchIdCol" text="ID" prefWidth="40"/>
-                            <TableColumn fx:id="team1Col" text="Team 1" prefWidth="150"/>
-                            <TableColumn fx:id="team2Col" text="Team 2" prefWidth="150"/>
-                            <TableColumn fx:id="dateCol" text="Date" prefWidth="100"/>
-                            <TableColumn fx:id="locationCol" text="Location" prefWidth="120"/>
-                            <TableColumn fx:id="score1Col" text="Score 1" prefWidth="70"/>
-                            <TableColumn fx:id="score2Col" text="Score 2" prefWidth="70"/>
-                            <TableColumn fx:id="statusCol" text="Status" prefWidth="100"/>
+                            <TableColumn fx:id="matchIdCol" text="ID" prefWidth="50"/>
+                            <TableColumn fx:id="team1Col" text="Team 1" prefWidth="180"/>
+                            <TableColumn fx:id="team2Col" text="Team 2" prefWidth="180"/>
+                            <TableColumn fx:id="dateCol" text="Date" prefWidth="110"/>
+                            <TableColumn fx:id="locationCol" text="Location" prefWidth="150"/>
+                            <TableColumn fx:id="score1Col" text="Score 1" prefWidth="80"/>
+                            <TableColumn fx:id="score2Col" text="Score 2" prefWidth="80"/>
+                            <TableColumn fx:id="statusCol" text="Status" prefWidth="120"/>
                         </columns>
                     </TableView>
                 </VBox>

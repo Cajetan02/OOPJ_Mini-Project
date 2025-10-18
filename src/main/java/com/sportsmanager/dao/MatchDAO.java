@@ -7,9 +7,9 @@ import java.sql.*;
 import java.time.LocalDate;
 
 public class MatchDAO {
-    
+
     public void addMatch(Match match) throws SQLException {
-        String sql = "INSERT INTO matches (team1_name, team2_name, match_date, location, team1_score, team2_score, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO matches (team1_name, team2_name, match_date, location, team1_score, team2_score, status, sport_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, match.getTeam1Name());
@@ -19,29 +19,38 @@ public class MatchDAO {
             pstmt.setInt(5, match.getTeam1Score());
             pstmt.setInt(6, match.getTeam2Score());
             pstmt.setString(7, match.getStatus());
+            pstmt.setInt(8, match.getSportId());
             pstmt.executeUpdate();
         }
     }
 
     public ObservableList<Match> getAllMatches() throws SQLException {
         ObservableList<Match> matches = FXCollections.observableArrayList();
-        String sql = "SELECT * FROM matches ORDER BY match_date";
-        
+        String sql = "SELECT * FROM matches ORDER BY match_date DESC";
+
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
-            
+
             while (rs.next()) {
-                Match match = new Match(
-                    rs.getInt("id"),
-                    rs.getString("team1_name"),
-                    rs.getString("team2_name"),
-                    rs.getDate("match_date").toLocalDate(),
-                    rs.getString("location"),
-                    rs.getInt("team1_score"),
-                    rs.getInt("team2_score"),
-                    rs.getString("status")
-                );
+                Match match = createMatchFromResultSet(rs);
+                matches.add(match);
+            }
+        }
+        return matches;
+    }
+
+    public ObservableList<Match> getMatchesBySport(int sportId) throws SQLException {
+        ObservableList<Match> matches = FXCollections.observableArrayList();
+        String sql = "SELECT * FROM matches WHERE sport_id = ? ORDER BY match_date DESC";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, sportId);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                Match match = createMatchFromResultSet(rs);
                 matches.add(match);
             }
         }
@@ -66,5 +75,19 @@ public class MatchDAO {
             pstmt.setInt(1, matchId);
             pstmt.executeUpdate();
         }
+    }
+
+    private Match createMatchFromResultSet(ResultSet rs) throws SQLException {
+        return new Match(
+                rs.getInt("id"),
+                rs.getString("team1_name"),
+                rs.getString("team2_name"),
+                rs.getDate("match_date").toLocalDate(),
+                rs.getString("location"),
+                rs.getInt("team1_score"),
+                rs.getInt("team2_score"),
+                rs.getString("status"),
+                rs.getInt("sport_id")
+        );
     }
 }

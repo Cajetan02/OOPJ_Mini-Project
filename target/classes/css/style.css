@@ -1,157 +1,377 @@
-/* Root styling */
+/* ===================================
+   DARK THEME - Sports Event Manager
+   =================================== */
+
+/* Root styling - Dark background */
 .root {
-    -fx-font-family: "Segoe UI", "Arial", sans-serif;
-    -fx-background-color: #f5f5f5;
+    -fx-font-family: "Segoe UI", "Roboto", "Arial", sans-serif;
+    -fx-background-color: #1a1a1a;
 }
 
-/* Header */
+/* Header - Gradient with neon colors */
 .header {
-    -fx-background-color: linear-gradient(to right, #667eea, #764ba2);
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 2);
+    -fx-background-color: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.4), 15, 0, 0, 5);
+    -fx-padding: 25;
 }
 
 .title {
-    -fx-font-size: 28px;
+    -fx-font-size: 32px;
     -fx-font-weight: bold;
     -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);
 }
 
 .section-title {
-    -fx-font-size: 16px;
+    -fx-font-size: 18px;
     -fx-font-weight: bold;
-    -fx-text-fill: #333;
+    -fx-text-fill: #ffffff;
+    -fx-padding: 10 0;
 }
 
-/* Buttons */
+.subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #b0b0b0;
+}
+
+/* ==================
+   BUTTONS - Neon Style
+   ================== */
 .button {
-    -fx-padding: 8 20;
+    -fx-padding: 10 25;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
     -fx-cursor: hand;
-    -fx-background-radius: 5;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);
+    -fx-transition: all 0.3s ease;
 }
 
 .btn-primary {
-    -fx-background-color: #667eea;
+    -fx-background-color: linear-gradient(to bottom, #667eea, #5568d3);
     -fx-text-fill: white;
-}
-
-.btn-primary:hover {
-    -fx-background-color: #5568d3;
-}
-
-.btn-success {
-    -fx-background-color: #48bb78;
-    -fx-text-fill: white;
-}
-
-.btn-success:hover {
-    -fx-background-color: #38a169;
-}
-
-.btn-danger {
-    -fx-background-color: #f56565;
-    -fx-text-fill: white;
-}
-
-.btn-danger:hover {
-    -fx-background-color: #e53e3e;
-}
-
-/* Text Fields */
-.text-field {
-    -fx-padding: 8;
-    -fx-font-size: 14px;
-    -fx-background-color: white;
-    -fx-border-color: #cbd5e0;
-    -fx-border-radius: 5;
-    -fx-background-radius: 5;
-}
-
-.text-field:focused {
     -fx-border-color: #667eea;
     -fx-border-width: 2;
 }
 
-/* ComboBox */
+.btn-primary:hover {
+    -fx-background-color: linear-gradient(to bottom, #7c8ff5, #667eea);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.6), 15, 0, 0, 3);
+}
+
+.btn-success {
+    -fx-background-color: linear-gradient(to bottom, #48bb78, #38a169);
+    -fx-text-fill: white;
+    -fx-border-color: #48bb78;
+    -fx-border-width: 2;
+}
+
+.btn-success:hover {
+    -fx-background-color: linear-gradient(to bottom, #5cd68f, #48bb78);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(gaussian, rgba(72, 187, 120, 0.6), 15, 0, 0, 3);
+}
+
+.btn-danger {
+    -fx-background-color: linear-gradient(to bottom, #f56565, #e53e3e);
+    -fx-text-fill: white;
+    -fx-border-color: #f56565;
+    -fx-border-width: 2;
+}
+
+.btn-danger:hover {
+    -fx-background-color: linear-gradient(to bottom, #ff7a7a, #f56565);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(gaussian, rgba(245, 101, 101, 0.6), 15, 0, 0, 3);
+}
+
+.btn-warning {
+    -fx-background-color: linear-gradient(to bottom, #ed8936, #dd6b20);
+    -fx-text-fill: white;
+    -fx-border-color: #ed8936;
+    -fx-border-width: 2;
+}
+
+.btn-warning:hover {
+    -fx-background-color: linear-gradient(to bottom, #ff9f4b, #ed8936);
+    -fx-effect: dropshadow(gaussian, rgba(237, 137, 54, 0.6), 15, 0, 0, 3);
+}
+
+/* ==================
+   TEXT FIELDS - Dark Mode
+   ================== */
+.text-field {
+    -fx-padding: 12;
+    -fx-font-size: 14px;
+    -fx-background-color: #2d2d2d;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #404040;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-border-width: 2;
+}
+
+.text-field:focused {
+    -fx-border-color: #667eea;
+    -fx-background-color: #353535;
+    -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.4), 10, 0, 0, 0);
+}
+
+.text-field:hover {
+    -fx-border-color: #505050;
+}
+
+/* Prompt text color */
+.text-field .text {
+    -fx-fill: #ffffff;
+}
+
+/* ==================
+   COMBO BOX - Dark Mode
+   ================== */
 .combo-box {
-    -fx-background-color: white;
-    -fx-border-color: #cbd5e0;
-    -fx-border-radius: 5;
-    -fx-background-radius: 5;
+    -fx-background-color: #2d2d2d;
+    -fx-border-color: #404040;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-border-width: 2;
 }
 
-/* DatePicker */
+.combo-box:hover {
+    -fx-border-color: #505050;
+}
+
+.combo-box .list-cell {
+    -fx-background-color: #2d2d2d;
+    -fx-text-fill: #ffffff;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: #2d2d2d;
+    -fx-border-color: #667eea;
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #404040;
+}
+
+/* ==================
+   DATE PICKER - Dark Mode
+   ================== */
 .date-picker {
-    -fx-background-color: white;
+    -fx-background-color: #2d2d2d;
+    -fx-border-color: #404040;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
 }
 
-/* Labels */
+.date-picker .text-field {
+    -fx-background-color: #2d2d2d;
+    -fx-text-fill: #ffffff;
+}
+
+.date-picker-popup {
+    -fx-background-color: #2d2d2d;
+}
+
+/* ==================
+   LABELS - Light text on dark
+   ================== */
 .label {
     -fx-font-size: 14px;
-    -fx-text-fill: #2d3748;
+    -fx-text-fill: #e0e0e0;
 }
 
-/* TableView */
+/* ==================
+   TABLE VIEW - Dark Theme with Neon Accents
+   ================== */
 .table-view {
-    -fx-background-color: white;
-    -fx-border-color: #e2e8f0;
-    -fx-border-radius: 5;
-    -fx-background-radius: 5;
+    -fx-background-color: #1a1a1a;
+    -fx-border-color: #667eea;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0, 0, 3);
 }
 
 .table-view .column-header {
-    -fx-background-color: #667eea;
+    -fx-background-color: linear-gradient(to bottom, #667eea, #5568d3);
     -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-font-size: 13px;
-    -fx-padding: 10;
+    -fx-font-size: 14px;
+    -fx-padding: 12;
+    -fx-border-color: #7c8ff5;
 }
 
 .table-view .column-header-background {
     -fx-background-color: #667eea;
 }
 
-.table-row-cell {
-    -fx-background-color: white;
-    -fx-border-color: transparent;
-}
-
-.table-row-cell:odd {
-    -fx-background-color: #f7fafc;
-}
-
-.table-row-cell:selected {
-    -fx-background-color: #bee3f8;
-    -fx-text-fill: #1a202c;
-}
-
-.table-row-cell:hover {
-    -fx-background-color: #e6fffa;
-}
-
-/* Tab Pane */
-.tab-pane {
-    -fx-background-color: white;
-}
-
-.tab {
-    -fx-background-color: #e2e8f0;
-    -fx-padding: 10 20;
-}
-
-.tab:selected {
-    -fx-background-color: white;
-    -fx-border-color: #667eea;
-    -fx-border-width: 0 0 3 0;
-}
-
-.tab .tab-label {
-    -fx-font-size: 14px;
+.table-view .column-header .label {
+    -fx-text-fill: white;
     -fx-font-weight: bold;
 }
 
-/* Separator */
+.table-row-cell {
+    -fx-background-color: #2d2d2d;
+    -fx-border-color: transparent;
+    -fx-text-fill: #ffffff;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #252525;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: linear-gradient(to right, #667eea, #764ba2);
+    -fx-text-fill: white;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #353535;
+    -fx-cursor: hand;
+}
+
+.table-cell {
+    -fx-text-fill: #ffffff;
+    -fx-padding: 10;
+}
+
+.table-row-cell:selected .table-cell {
+    -fx-text-fill: white;
+}
+
+/* ==================
+   TAB PANE - Dark with Gradient
+   ================== */
+.tab-pane {
+    -fx-background-color: #1a1a1a;
+    -fx-border-color: #667eea;
+    -fx-border-width: 0 0 2 0;
+}
+
+.tab-pane .tab-header-area {
+    -fx-background-color: #1a1a1a;
+}
+
+.tab {
+    -fx-background-color: #2d2d2d;
+    -fx-padding: 12 25;
+    -fx-background-radius: 8 8 0 0;
+    -fx-border-color: #404040;
+    -fx-border-width: 2 2 0 2;
+}
+
+.tab:hover {
+    -fx-background-color: #353535;
+}
+
+.tab:selected {
+    -fx-background-color: linear-gradient(to bottom, #667eea, #5568d3);
+    -fx-border-color: #667eea;
+    -fx-border-width: 2 2 0 2;
+}
+
+.tab .tab-label {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #b0b0b0;
+}
+
+.tab:selected .tab-label {
+    -fx-text-fill: white;
+}
+
+.tab:hover .tab-label {
+    -fx-text-fill: #ffffff;
+}
+
+/* ==================
+   SEPARATOR
+   ================== */
 .separator {
-    -fx-background-color: #e2e8f0;
+    -fx-background-color: #404040;
+}
+
+.separator .line {
+    -fx-border-color: #667eea;
+    -fx-border-width: 1;
+}
+
+/* ==================
+   VBOX & HBOX Styling
+   ================== */
+.vbox, .hbox {
+    -fx-background-color: transparent;
+}
+
+/* ==================
+   SCROLL BAR - Dark
+   ================== */
+.scroll-bar {
+    -fx-background-color: #1a1a1a;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #667eea;
+    -fx-background-radius: 5;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #7c8ff5;
+}
+
+.scroll-bar .track {
+    -fx-background-color: #2d2d2d;
+}
+
+/* ==================
+   CARD/PANEL Style
+   ================== */
+.card {
+    -fx-background-color: #2d2d2d;
+    -fx-background-radius: 10;
+    -fx-border-color: #404040;
+    -fx-border-radius: 10;
+    -fx-border-width: 2;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 8, 0, 0, 3);
+}
+
+.card:hover {
+    -fx-border-color: #667eea;
+    -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.4), 12, 0, 0, 4);
+}
+
+/* ==================
+   STANDINGS TABLE - Special Styling
+   ================== */
+.standings-table .table-row-cell:filled {
+    -fx-border-color: #404040;
+    -fx-border-width: 0 0 1 0;
+}
+
+.standings-table .table-row-cell:filled:selected {
+    -fx-background-color: linear-gradient(to right, #48bb78, #38a169);
+}
+
+/* Position badges */
+.position-1 {
+    -fx-background-color: #ffd700;
+    -fx-text-fill: #000000;
+}
+
+.position-2 {
+    -fx-background-color: #c0c0c0;
+    -fx-text-fill: #000000;
+}
+
+.position-3 {
+    -fx-background-color: #cd7f32;
+    -fx-text-fill: #ffffff;
 }

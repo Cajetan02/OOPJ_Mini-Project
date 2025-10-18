@@ -1,8 +1,9 @@
-/workspaces/OOPJ_Mini-Project/src/main/java/com/SportsManager/model/Team.java
-/workspaces/OOPJ_Mini-Project/src/main/java/com/SportsManager/dao/TeamDAO.java
-/workspaces/OOPJ_Mini-Project/src/main/java/com/SportsManager/Main.java
-/workspaces/OOPJ_Mini-Project/src/main/java/com/SportsManager/model/Match.java
-/workspaces/OOPJ_Mini-Project/src/main/java/com/SportsManager/controller/MainController.java
-/workspaces/OOPJ_Mini-Project/src/main/java/com/SportsManager/model/Schedule.java
-/workspaces/OOPJ_Mini-Project/src/main/java/com/SportsManager/dao/DatabaseConnection.java
-/workspaces/OOPJ_Mini-Project/src/main/java/com/SportsManager/dao/MatchDAO.java
+C:\Users\cajetan\Desktop\OOPJ_Mini-Project-main\src\main\java\com\sportsmanager\dao\TeamDAO.java
+C:\Users\cajetan\Desktop\OOPJ_Mini-Project-main\src\main\java\com\sportsmanager\model\Team.java
+C:\Users\cajetan\Desktop\OOPJ_Mini-Project-main\src\main\java\com\sportsmanager\dao\SportDAO.java
+C:\Users\cajetan\Desktop\OOPJ_Mini-Project-main\src\main\java\com\sportsmanager\controller\MainController.java
+C:\Users\cajetan\Desktop\OOPJ_Mini-Project-main\src\main\java\com\sportsmanager\model\Match.java
+C:\Users\cajetan\Desktop\OOPJ_Mini-Project-main\src\main\java\com\sportsmanager\dao\MatchDAO.java
+C:\Users\cajetan\Desktop\OOPJ_Mini-Project-main\src\main\java\com\sportsmanager\model\Sport.java
+C:\Users\cajetan\Desktop\OOPJ_Mini-Project-main\src\main\java\com\sportsmanager\dao\DatabaseConnection.java
+C:\Users\cajetan\Desktop\OOPJ_Mini-Project-main\src\main\java\com\sportsmanager\Main.java
