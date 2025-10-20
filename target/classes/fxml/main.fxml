@@ -13,7 +13,7 @@
     <top>
         <VBox styleClass="header">
             <Label text="🏆 Sports Event Manager" styleClass="title"/>
-            <Label text="Multi-Sport Tournament Management System" styleClass="subtitle"/>
+            <Label text="Multi-Sport Tournament Management System v2.0" styleClass="subtitle"/>
             <padding>
                 <Insets top="20" right="20" bottom="20" left="20"/>
             </padding>
@@ -46,6 +46,12 @@
 
                     <Separator/>
 
+                    <!-- Search Bar -->
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="🔍 Search:"/>
+                        <TextField fx:id="sportSearchField" promptText="Search sports..." prefWidth="300"/>
+                    </HBox>
+
                     <!-- Sports Table -->
                     <TableView fx:id="sportsTable" VBox.vgrow="ALWAYS" prefHeight="400">
                         <columns>
@@ -55,7 +61,7 @@
                         </columns>
                     </TableView>
 
-                    <Label text="💡 Tip: Select a sport above, then go to Teams/Matches tabs" styleClass="subtitle"/>
+                    <Label text="💡 Tip: Double-click a sport to edit, then select it for Teams/Matches" styleClass="subtitle"/>
                 </VBox>
             </Tab>
 
@@ -94,6 +100,12 @@
                         </HBox>
                     </VBox>
 
+                    <!-- Search Bar -->
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="🔍 Search:"/>
+                        <TextField fx:id="teamSearchField" promptText="Search teams or coaches..." prefWidth="300"/>
+                    </HBox>
+
                     <!-- Teams Table -->
                     <TableView fx:id="teamsTable" VBox.vgrow="ALWAYS" prefHeight="400">
                         <columns>
@@ -109,6 +121,8 @@
                             <TableColumn fx:id="goalDiffCol" text="GD" prefWidth="70"/>
                         </columns>
                     </TableView>
+
+                    <Label text="💡 Tip: Double-click a team to edit details" styleClass="subtitle"/>
                 </VBox>
             </Tab>
 
@@ -129,6 +143,9 @@
                         <Button text="Refresh" onAction="#handleLoadStandings" styleClass="btn-success"/>
                     </HBox>
 
+                    <!-- Statistics Label -->
+                    <Label fx:id="statsLabel" text="📊 Select a sport to view statistics" styleClass="stats-label"/>
+
                     <!-- Standings Table -->
                     <TableView fx:id="standingsTable" VBox.vgrow="ALWAYS" prefHeight="500" styleClass="standings-table">
                         <columns>
@@ -145,7 +162,7 @@
                         </columns>
                     </TableView>
 
-                    <Label text="📊 Teams are sorted by Points, then Goal Difference" styleClass="subtitle"/>
+                    <Label text="📊 Sorted by: Points → Goal Difference → Goals For | 🥇 Gold = 1st | 🥈 Silver = 2nd | 🥉 Bronze = 3rd" styleClass="subtitle"/>
                 </VBox>
             </Tab>
 
@@ -215,6 +232,12 @@
 
                     <Separator/>
 
+                    <!-- Search Bar -->
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="🔍 Search:"/>
+                        <TextField fx:id="matchSearchField" promptText="Search teams or location..." prefWidth="300"/>
+                    </HBox>
+
                     <!-- Matches Table -->
                     <TableView fx:id="matchesTable" VBox.vgrow="ALWAYS" prefHeight="300">
                         <columns>
@@ -228,6 +251,8 @@
                             <TableColumn fx:id="statusCol" text="Status" prefWidth="120"/>
                         </columns>
                     </TableView>
+
+                    <Label text="💡 Tip: Double-click a completed match to load its scores for editing" styleClass="subtitle"/>
                 </VBox>
             </Tab>
 

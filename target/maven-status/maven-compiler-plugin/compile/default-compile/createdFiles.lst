@@ -1,9 +1,10 @@
-com\sportsmanager\controller\MainController.class
+com\sportsmanager\controller\MainController$1.class
 com\sportsmanager\dao\DatabaseConnection.class
+com\sportsmanager\dao\SportDAO.class
+com\sportsmanager\model\Match.class
+com\sportsmanager\model\Sport.class
+com\sportsmanager\controller\MainController.class
 com\sportsmanager\model\Team.class
 com\sportsmanager\dao\MatchDAO.class
 com\sportsmanager\dao\TeamDAO.class
-com\sportsmanager\dao\SportDAO.class
 com\sportsmanager\Main.class
-com\sportsmanager\model\Match.class
-com\sportsmanager\model\Sport.class
