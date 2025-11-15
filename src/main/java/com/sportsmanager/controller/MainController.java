@@ -1,12 +1,9 @@
 package com.sportsmanager.controller;
 
-import com.sportsmanager.model.Sport;
-import com.sportsmanager.model.Team;
-import com.sportsmanager.model.Match;
-import com.sportsmanager.dao.SportDAO;
-import com.sportsmanager.dao.TeamDAO;
-import com.sportsmanager.dao.MatchDAO;
-import com.sportsmanager.dao.DatabaseConnection;
+import com.sportsmanager.dao.*;
+import com.sportsmanager.model.*;
+import com.sportsmanager.util.SessionManager;
+import com.sportsmanager.util.NotificationUtil;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -14,10 +11,20 @@ import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import javafx.stage.Stage;
+import javafx.geometry.Insets;
+import javafx.scene.layout.GridPane;
 import java.time.LocalDate;
+import java.sql.Types;
 import java.util.Optional;
 
 public class MainController {
+
+    // Header
+    @FXML private Label welcomeLabel;
+    @FXML private Label roleLabel;
+    @FXML private Label connectionStatusLabel;
+    @FXML private Button logoutButton;
 
     // Sports Tab
     @FXML private TableView<Sport> sportsTable;
@@ -27,6 +34,8 @@ public class MainController {
     @FXML private TextField sportNameField;
     @FXML private ComboBox<String> scoringTypeCombo;
     @FXML private TextField sportSearchField;
+    @FXML private Button addSportButton;
+    @FXML private Button deleteSportButton;
 
     // Teams Tab
     @FXML private TableView<Team> teamsTable;
@@ -44,6 +53,8 @@ public class MainController {
     @FXML private TextField coachField;
     @FXML private ComboBox<Sport> teamSportCombo;
     @FXML private TextField teamSearchField;
+    @FXML private Button addTeamButton;
+    @FXML private Button deleteTeamButton;
 
     // Standings Tab
     @FXML private TableView<Team> standingsTable;
@@ -78,31 +89,259 @@ public class MainController {
     @FXML private TextField score2Field;
     @FXML private ComboBox<Sport> matchSportCombo;
     @FXML private TextField matchSearchField;
+    @FXML private Button scheduleMatchButton;
+    @FXML private Button updateResultButton;
+    @FXML private Button deleteMatchButton;
+
+    // Tournaments Tab
+    @FXML private TableView<Tournament> tournamentsTable;
+    @FXML private TableColumn<Tournament, Integer> tournamentIdCol;
+    @FXML private TableColumn<Tournament, String> tournamentNameCol;
+    @FXML private TableColumn<Tournament, String> tournamentSportCol;
+    @FXML private TableColumn<Tournament, String> tournamentTypeCol;
+    @FXML private TableColumn<Tournament, LocalDate> tournamentStartDateCol;
+    @FXML private TableColumn<Tournament, LocalDate> tournamentEndDateCol;
+    @FXML private TableColumn<Tournament, String> tournamentStatusCol;
+    @FXML private TableColumn<Tournament, String> tournamentWinnerCol;
+    @FXML private TextField tournamentNameField;
+    @FXML private ComboBox<Sport> tournamentSportCombo;
+    @FXML private ComboBox<Sport> tournamentSportCombo2; // For form (different from filter)
+    @FXML private ComboBox<String> tournamentTypeCombo;
+    @FXML private DatePicker tournamentStartDatePicker;
+    @FXML private DatePicker tournamentEndDatePicker;
+    @FXML private ComboBox<String> tournamentStatusCombo;
+    @FXML private TextField tournamentPrizeField;
+    @FXML private TextArea tournamentDescriptionArea;
+    @FXML private ComboBox<Team> tournamentWinnerCombo;
+    @FXML private TextField tournamentSearchField;
+    @FXML private Button addTournamentButton;
+    @FXML private Button deleteTournamentButton;
+    @FXML private Button updateTournamentButton;
+    @FXML private Button manageTeamsButton;
+    @FXML private ComboBox<Sport> globalSportCombo;
+    @FXML private TextField shareCodeField;
+    @FXML private TextField tournamentIdField;
 
     private SportDAO sportDAO = new SportDAO();
     private TeamDAO teamDAO = new TeamDAO();
     private MatchDAO matchDAO = new MatchDAO();
+    private TournamentDAO tournamentDAO = new TournamentDAO();
+    private SessionManager session = SessionManager.getInstance();
 
     private Sport selectedSport = null;
+    private Tournament selectedTournament = null;
     private FilteredList<Sport> filteredSports;
     private FilteredList<Team> filteredTeams;
     private FilteredList<Match> filteredMatches;
+    private FilteredList<Tournament> filteredTournaments;
 
     @FXML
     public void initialize() {
-        setupSportsTable();
-        setupTeamsTable();
-        setupStandingsTable();
-        setupMatchesTable();
+        System.out.println("🎮 Initializing MainController...");
+        System.out.println("📍 Session status: " + (session.isLoggedIn() ? "Logged In" : "Not Logged In"));
 
-        setupSearchFilters();
+        if (session.isLoggedIn()) {
+            System.out.println("👤 Current user: " + session.getCurrentUser().getFullName());
+            System.out.println("🔑 User role: " + session.getCurrentUser().getRole());
+        }
 
-        // Populate scoring type combo
-        scoringTypeCombo.setItems(FXCollections.observableArrayList(
-                "GOALS", "POINTS", "RUNS", "SETS"
-        ));
+        try {
+            setupHeader();
+            setupSportsTable();
+            setupTeamsTable();
+            setupStandingsTable();
+            setupMatchesTable();
 
-        loadSports();
+            // Only setup tournaments if table exists
+            if (tournamentsTable != null) {
+                setupTournamentsTable();
+            } else {
+                System.out.println("⚠️ Tournaments table not found in FXML");
+            }
+
+            setupSearchFilters();
+            setupRoleBasedAccess();
+
+            if (scoringTypeCombo != null) {
+                scoringTypeCombo.setItems(FXCollections.observableArrayList(
+                        "GOALS", "POINTS", "RUNS", "SETS"
+                ));
+            }
+
+            // Only setup tournament combos if they exist
+            if (tournamentTypeCombo != null) {
+                tournamentTypeCombo.setItems(FXCollections.observableArrayList(
+                        "league", "knockout", "group_knockout"
+                ));
+            }
+
+            if (tournamentStatusCombo != null) {
+                tournamentStatusCombo.setItems(FXCollections.observableArrayList(
+                        "upcoming", "ongoing", "completed", "cancelled"
+                ));
+            }
+
+            loadSports();
+
+            // Only load tournaments if table exists
+            if (tournamentsTable != null) {
+                loadTournaments();
+            }
+
+            System.out.println("✅ MainController initialized successfully");
+
+        } catch (Exception e) {
+            System.err.println("❌ CRITICAL ERROR in MainController initialization!");
+            System.err.println("Error message: " + e.getMessage());
+            System.err.println("Error class: " + e.getClass().getName());
+            e.printStackTrace();
+
+            // Show error dialog on JavaFX thread
+            javafx.application.Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Initialization Error");
+                alert.setHeaderText("Failed to load Sports Manager");
+                alert.setContentText("Error: " + e.getMessage() + "\n\nPlease check console for details.");
+                alert.showAndWait();
+            });
+        }
+    }
+
+    // ============================================
+    // HEADER & SESSION MANAGEMENT
+    // ============================================
+
+    private void setupHeader() {
+        System.out.println("🔧 Setting up header...");
+
+        try {
+            if (session.isLoggedIn()) {
+                User currentUser = session.getCurrentUser();
+
+                if (welcomeLabel != null) {
+                    welcomeLabel.setText("Welcome, " + currentUser.getFullName() + "!");
+                } else {
+                    System.out.println("⚠️ welcomeLabel is null");
+                }
+
+                if (roleLabel != null) {
+                    String role = currentUser.getRole().toUpperCase();
+                    String emoji = switch (role) {
+                        case "ADMIN" -> "👑";
+                        case "MANAGER" -> "📋";
+                        case "PLAYER" -> "⚽";
+                        default -> "👤";
+                    };
+                    roleLabel.setText(emoji + " " + role);
+                } else {
+                    System.out.println("⚠️ roleLabel is null");
+                }
+            } else {
+                System.err.println("⚠️ User not logged in during header setup!");
+            }
+
+            if (connectionStatusLabel != null) {
+                try {
+                    connectionStatusLabel.setText(SupabaseConnection.getConnectionInfo());
+                } catch (Exception e) {
+                    System.err.println("⚠️ Could not get connection info: " + e.getMessage());
+                    connectionStatusLabel.setText("❌ Connection Error");
+                }
+            } else {
+                System.out.println("⚠️ connectionStatusLabel is null");
+            }
+
+            System.out.println("✅ Header setup complete");
+
+        } catch (Exception e) {
+            System.err.println("❌ Error in setupHeader: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleLogout() {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Logout");
+        confirm.setHeaderText("Confirm Logout");
+        confirm.setContentText("Are you sure you want to logout?");
+
+        Optional<ButtonType> result = confirm.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            session.logout();
+
+            try {
+                Stage stage = (Stage) logoutButton.getScene().getWindow();
+                javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                        getClass().getResource("/fxml/login.fxml")
+                );
+                javafx.scene.Scene scene = new javafx.scene.Scene(loader.load(), 450, 600);
+                scene.getStylesheets().add(
+                        getClass().getResource("/css/style.css").toExternalForm()
+                );
+
+                com.sportsmanager.controller.LoginController controller = loader.getController();
+                controller.setStage(stage);
+
+                stage.setTitle("🏆 Sports Manager Pro - Login");
+                stage.setScene(scene);
+                stage.centerOnScreen();
+
+            } catch (Exception e) {
+                showError("Error", "Failed to return to login: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @FXML
+    private void handleRefreshConnection() {
+        connectionStatusLabel.setText("Testing connection...");
+
+        new Thread(() -> {
+            boolean connected = SupabaseConnection.testConnection();
+
+            javafx.application.Platform.runLater(() -> {
+                if (connected) {
+                    connectionStatusLabel.setText("✅ " + SupabaseConnection.getConnectionInfo());
+                    showToastSuccess("Connection successful!");
+                } else {
+                    connectionStatusLabel.setText("❌ Connection Failed");
+                    showToastError("Connection failed!");
+                }
+            });
+        }).start();
+    }
+
+    // ============================================
+    // ROLE-BASED ACCESS CONTROL
+    // ============================================
+
+    private void setupRoleBasedAccess() {
+        boolean canModify = session.canModifyData();
+        boolean canDelete = session.canDeleteData();
+
+        if (addSportButton != null) addSportButton.setDisable(!canDelete);
+        if (deleteSportButton != null) deleteSportButton.setDisable(!canDelete);
+        if (addTeamButton != null) addTeamButton.setDisable(!canModify);
+        if (deleteTeamButton != null) deleteTeamButton.setDisable(!canModify);
+        if (scheduleMatchButton != null) scheduleMatchButton.setDisable(!canModify);
+        if (updateResultButton != null) updateResultButton.setDisable(!canModify);
+        if (deleteMatchButton != null) deleteMatchButton.setDisable(!canDelete);
+        if (addTournamentButton != null) addTournamentButton.setDisable(!canModify);
+        if (updateTournamentButton != null) updateTournamentButton.setDisable(!canModify);
+        if (deleteTournamentButton != null) deleteTournamentButton.setDisable(!canModify);
+
+        if (!canModify) {
+            if (sportNameField != null) sportNameField.setDisable(true);
+            if (scoringTypeCombo != null) scoringTypeCombo.setDisable(true);
+            if (teamNameField != null) teamNameField.setDisable(true);
+            if (coachField != null) coachField.setDisable(true);
+            if (tournamentNameField != null) tournamentNameField.setDisable(true);
+            if (tournamentTypeCombo != null) tournamentTypeCombo.setDisable(true);
+        }
+
+        System.out.println("🔒 Role-based access configured for: " + session.getCurrentUser().getRole());
     }
 
     // ============================================
@@ -110,7 +349,6 @@ public class MainController {
     // ============================================
 
     private void setupSearchFilters() {
-        // Sport search
         if (sportSearchField != null) {
             sportSearchField.textProperty().addListener((observable, oldValue, newValue) -> {
                 if (filteredSports != null) {
@@ -123,7 +361,6 @@ public class MainController {
             });
         }
 
-        // Team search
         if (teamSearchField != null) {
             teamSearchField.textProperty().addListener((observable, oldValue, newValue) -> {
                 if (filteredTeams != null) {
@@ -136,7 +373,6 @@ public class MainController {
             });
         }
 
-        // Match search
         if (matchSearchField != null) {
             matchSearchField.textProperty().addListener((observable, oldValue, newValue) -> {
                 if (filteredMatches != null) {
@@ -149,8 +385,51 @@ public class MainController {
                 }
             });
         }
+
+        if (tournamentSearchField != null) {
+            tournamentSearchField.textProperty().addListener((observable, oldValue, newValue) -> {
+                if (filteredTournaments != null) {
+                    filteredTournaments.setPredicate(tournament -> {
+                        if (newValue == null || newValue.isEmpty()) return true;
+                        return tournament.getName().toLowerCase().contains(newValue.toLowerCase()) ||
+                                tournament.getSportName().toLowerCase().contains(newValue.toLowerCase()) ||
+                                tournament.getStatus().toLowerCase().contains(newValue.toLowerCase());
+                    });
+                }
+            });
+        }
     }
 
+    @FXML
+    private void handleGlobalSportChange() {
+        Sport sport = globalSportCombo.getValue();  // ✅ FIX: Use globalSportCombo, not matchSportCombo
+        if (sport != null) {
+            selectedSport = sport;
+
+            // Update all sport-dependent data
+            loadTeamsForSport(sport.getId());
+            loadTeamsForMatchCombos(sport.getId());
+            loadMatchesForSport(sport.getId());
+            loadStandings(sport.getId());
+
+            // Sync all other sport combos
+            if (teamSportCombo != null) {
+                teamSportCombo.setValue(sport);
+            }
+            if (matchSportCombo != null) {
+                matchSportCombo.setValue(sport);
+            }
+            if (standingsSportCombo != null) {
+                standingsSportCombo.setValue(sport);
+            }
+            if (tournamentSportCombo != null) {
+                tournamentSportCombo.setValue(sport);
+            }
+            if (tournamentSportCombo2 != null) {
+                tournamentSportCombo2.setValue(sport);
+            }
+        }
+    }
     // ============================================
     // SPORTS TAB METHODS
     // ============================================
@@ -167,9 +446,8 @@ public class MainController {
             }
         });
 
-        // Enable row selection with double-click to edit
         sportsTable.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) {
+            if (event.getClickCount() == 2 && session.isAdmin()) {
                 Sport selected = sportsTable.getSelectionModel().getSelectedItem();
                 if (selected != null) {
                     sportNameField.setText(selected.getName());
@@ -181,33 +459,36 @@ public class MainController {
 
     @FXML
     private void handleAddSport() {
+        if (!session.isAdmin()) {
+            showToastWarning("Only administrators can add sports!");
+            return;
+        }
+
         try {
             String name = sportNameField.getText().trim();
             String scoringType = scoringTypeCombo.getValue();
 
-            // Validation
             if (name.isEmpty()) {
-                showWarning("Validation Error", "Sport name cannot be empty!");
+                showToastWarning("Sport name cannot be empty!");
                 sportNameField.requestFocus();
                 return;
             }
 
             if (name.length() < 3) {
-                showWarning("Validation Error", "Sport name must be at least 3 characters!");
+                showToastWarning("Sport name must be at least 3 characters!");
                 sportNameField.requestFocus();
                 return;
             }
 
             if (scoringType == null) {
-                showWarning("Validation Error", "Please select a scoring type!");
+                showToastWarning("Please select a scoring type!");
                 scoringTypeCombo.requestFocus();
                 return;
             }
 
-            // Check for duplicates
             for (Sport sport : sportsTable.getItems()) {
                 if (sport.getName().equalsIgnoreCase(name)) {
-                    showWarning("Duplicate Entry", "A sport with this name already exists!");
+                    showToastWarning("A sport with this name already exists!");
                     return;
                 }
             }
@@ -215,26 +496,29 @@ public class MainController {
             Sport sport = new Sport(name, scoringType);
             sportDAO.addSport(sport);
 
-            DatabaseConnection.logAction("ADD", "sports", 0, "Added sport: " + name);
-
             loadSports();
             clearSportFields();
-            showSuccess("Success", "Sport '" + name + "' added successfully!");
+            showToastSuccess("Sport '" + name + "' added successfully!");
+
         } catch (Exception e) {
-            showError("Error", "Failed to add sport: " + e.getMessage());
+            showToastError("Failed to add sport: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     @FXML
     private void handleDeleteSport() {
-        Sport selected = sportsTable.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showWarning("Selection Required", "Please select a sport to delete!");
+        if (!session.isAdmin()) {
+            showToastWarning("Only administrators can delete sports!");
             return;
         }
 
-        // Confirmation dialog
+        Sport selected = sportsTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showToastWarning("Please select a sport to delete!");
+            return;
+        }
+
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Confirm Deletion");
         confirm.setHeaderText("Delete Sport: " + selected.getName());
@@ -244,11 +528,10 @@ public class MainController {
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
                 sportDAO.deleteSport(selected.getId());
-                DatabaseConnection.logAction("DELETE", "sports", selected.getId(), "Deleted sport: " + selected.getName());
                 loadSports();
-                showSuccess("Success", "Sport deleted successfully!");
+                showToastSuccess("Sport deleted successfully!");
             } catch (Exception e) {
-                showError("Error", "Failed to delete sport: " + e.getMessage());
+                showToastError("Failed to delete sport: " + e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -256,14 +539,16 @@ public class MainController {
 
     private void loadSports() {
         try {
+            System.out.println("📊 Loading sports from database...");
             ObservableList<Sport> sports = sportDAO.getAllSports();
             filteredSports = new FilteredList<>(sports, p -> true);
             SortedList<Sport> sortedSports = new SortedList<>(filteredSports);
             sortedSports.comparatorProperty().bind(sportsTable.comparatorProperty());
             sportsTable.setItems(sortedSports);
             updateSportCombos();
+            System.out.println("✅ Loaded " + sports.size() + " sports");
         } catch (Exception e) {
-            showError("Error", "Failed to load sports: " + e.getMessage());
+            showToastError("Failed to load sports: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -271,12 +556,30 @@ public class MainController {
     private void updateSportCombos() {
         try {
             ObservableList<Sport> sports = sportDAO.getAllSports();
+
+            // ✅ FIX: Add globalSportCombo here!
+            if (globalSportCombo != null) {
+                globalSportCombo.setItems(sports);
+            }
+
             teamSportCombo.setItems(sports);
             matchSportCombo.setItems(sports);
             standingsSportCombo.setItems(sports);
+            if (tournamentSportCombo != null) {
+                tournamentSportCombo.setItems(sports);
+            }
+            if (tournamentSportCombo2 != null) {
+                tournamentSportCombo2.setItems(sports);
+            }
 
             if (selectedSport == null && !sports.isEmpty()) {
                 selectedSport = sports.get(0);
+
+                // ✅ FIX: Set global combo too!
+                if (globalSportCombo != null) {
+                    globalSportCombo.setValue(selectedSport);
+                }
+
                 teamSportCombo.setValue(selectedSport);
                 matchSportCombo.setValue(selectedSport);
                 standingsSportCombo.setValue(selectedSport);
@@ -287,7 +590,7 @@ public class MainController {
                 loadStandings(selectedSport.getId());
             }
         } catch (Exception e) {
-            showError("Error", "Failed to update sport filters: " + e.getMessage());
+            showToastError("Failed to update sport filters: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -316,9 +619,8 @@ public class MainController {
                 new javafx.beans.property.SimpleIntegerProperty(cellData.getValue().getGoalDifference()).asObject()
         );
 
-        // Double-click to edit
         teamsTable.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) {
+            if (event.getClickCount() == 2 && session.canModifyData()) {
                 Team selected = teamsTable.getSelectionModel().getSelectedItem();
                 if (selected != null) {
                     teamNameField.setText(selected.getName());
@@ -330,9 +632,14 @@ public class MainController {
 
     @FXML
     private void handleAddTeam() {
+        if (!session.canModifyData()) {
+            showToastWarning("You don't have permission to add teams!");
+            return;
+        }
+
         Sport sport = teamSportCombo.getValue();
         if (sport == null) {
-            showWarning("Selection Required", "Please select a sport first!");
+            showToastWarning("Please select a sport first!");
             teamSportCombo.requestFocus();
             return;
         }
@@ -341,49 +648,51 @@ public class MainController {
             String name = teamNameField.getText().trim();
             String coach = coachField.getText().trim();
 
-            // Validation
             if (name.isEmpty() || coach.isEmpty()) {
-                showWarning("Validation Error", "Please fill all fields!");
+                showToastWarning("Please fill all fields!");
                 return;
             }
 
             if (name.length() < 2) {
-                showWarning("Validation Error", "Team name must be at least 2 characters!");
+                showToastWarning("Team name must be at least 2 characters!");
                 return;
             }
 
             if (coach.length() < 3) {
-                showWarning("Validation Error", "Coach name must be at least 3 characters!");
+                showToastWarning("Coach name must be at least 3 characters!");
                 return;
             }
 
-            // Check duplicates
             for (Team team : teamsTable.getItems()) {
                 if (team.getName().equalsIgnoreCase(name)) {
-                    showWarning("Duplicate Entry", "A team with this name already exists in this sport!");
+                    showToastWarning("A team with this name already exists in this sport!");
                     return;
                 }
             }
 
             Team team = new Team(name, coach, sport.getId());
             teamDAO.addTeam(team);
-            DatabaseConnection.logAction("ADD", "teams", 0, "Added team: " + name);
 
             loadTeamsForSport(sport.getId());
             loadTeamsForMatchCombos(sport.getId());
             clearTeamFields();
-            showSuccess("Success", "Team '" + name + "' added successfully!");
+            showToastSuccess("Team '" + name + "' added successfully!");
         } catch (Exception e) {
-            showError("Error", "Failed to add team: " + e.getMessage());
+            showToastError("Failed to add team: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     @FXML
     private void handleDeleteTeam() {
+        if (!session.canModifyData()) {
+            showToastWarning("You don't have permission to delete teams!");
+            return;
+        }
+
         Team selected = teamsTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showWarning("Selection Required", "Please select a team to delete!");
+            showToastWarning("Please select a team to delete!");
             return;
         }
 
@@ -396,16 +705,15 @@ public class MainController {
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
                 teamDAO.deleteTeam(selected.getId());
-                DatabaseConnection.logAction("DELETE", "teams", selected.getId(), "Deleted team: " + selected.getName());
 
                 Sport sport = teamSportCombo.getValue();
                 if (sport != null) {
                     loadTeamsForSport(sport.getId());
                     loadTeamsForMatchCombos(sport.getId());
                 }
-                showSuccess("Success", "Team deleted successfully!");
+                showToastSuccess("Team deleted successfully!");
             } catch (Exception e) {
-                showError("Error", "Failed to delete team: " + e.getMessage());
+                showToastError("Failed to delete team: " + e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -432,13 +740,15 @@ public class MainController {
 
     private void loadTeamsForSport(int sportId) {
         try {
+            System.out.println("📊 Loading teams for sport ID: " + sportId);
             ObservableList<Team> teams = teamDAO.getTeamsBySport(sportId);
             filteredTeams = new FilteredList<>(teams, p -> true);
             SortedList<Team> sortedTeams = new SortedList<>(filteredTeams);
             sortedTeams.comparatorProperty().bind(teamsTable.comparatorProperty());
             teamsTable.setItems(sortedTeams);
+            System.out.println("✅ Loaded " + teams.size() + " teams");
         } catch (Exception e) {
-            showError("Error", "Failed to load teams: " + e.getMessage());
+            showToastError("Failed to load teams: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -448,8 +758,11 @@ public class MainController {
             ObservableList<Team> teams = teamDAO.getTeamsBySport(sportId);
             team1Combo.setItems(teams);
             team2Combo.setItems(teams);
+            if (tournamentWinnerCombo != null) {
+                tournamentWinnerCombo.setItems(teams);
+            }
         } catch (Exception e) {
-            showError("Error", "Failed to load teams for matches: " + e.getMessage());
+            showToastError("Failed to load teams for matches: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -489,7 +802,6 @@ public class MainController {
 
         standPointsCol.setCellValueFactory(new PropertyValueFactory<>("points"));
 
-        // Highlight top 3 positions
         standingsTable.setRowFactory(tv -> new TableRow<Team>() {
             @Override
             protected void updateItem(Team team, boolean empty) {
@@ -499,11 +811,11 @@ public class MainController {
                 } else {
                     int index = getIndex() + 1;
                     if (index == 1) {
-                        setStyle("-fx-background-color: rgba(255, 215, 0, 0.2);"); // Gold
+                        setStyle("-fx-background-color: rgba(255, 215, 0, 0.2);");
                     } else if (index == 2) {
-                        setStyle("-fx-background-color: rgba(192, 192, 192, 0.2);"); // Silver
+                        setStyle("-fx-background-color: rgba(192, 192, 192, 0.2);");
                     } else if (index == 3) {
-                        setStyle("-fx-background-color: rgba(205, 127, 50, 0.2);"); // Bronze
+                        setStyle("-fx-background-color: rgba(205, 127, 50, 0.2);");
                     } else {
                         setStyle("");
                     }
@@ -518,16 +830,16 @@ public class MainController {
         if (sport != null) {
             loadStandings(sport.getId());
         } else {
-            showWarning("Selection Required", "Please select a sport first!");
+            showToastWarning("Please select a sport first!");
         }
     }
 
     private void loadStandings(int sportId) {
         try {
+            System.out.println("📊 Loading standings for sport ID: " + sportId);
             ObservableList<Team> teams = teamDAO.getStandingsBySport(sportId);
             standingsTable.setItems(teams);
 
-            // Update statistics label
             if (statsLabel != null && !teams.isEmpty()) {
                 int totalTeams = teams.size();
                 int totalMatches = teams.stream().mapToInt(t -> t.getWins() + t.getDraws() + t.getLosses()).sum() / 2;
@@ -538,8 +850,9 @@ public class MainController {
                         totalTeams, totalMatches, totalGoals
                 ));
             }
+            System.out.println("✅ Loaded standings for " + teams.size() + " teams");
         } catch (Exception e) {
-            showError("Error", "Failed to load standings: " + e.getMessage());
+            showToastError("Failed to load standings: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -558,9 +871,8 @@ public class MainController {
         score2Col.setCellValueFactory(new PropertyValueFactory<>("team2Score"));
         statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        // Double-click to load scores for editing
         matchesTable.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) {
+            if (event.getClickCount() == 2 && session.canModifyData()) {
                 Match selected = matchesTable.getSelectionModel().getSelectedItem();
                 if (selected != null && selected.getStatus().equals("Completed")) {
                     score1Field.setText(String.valueOf(selected.getTeam1Score()));
@@ -572,9 +884,14 @@ public class MainController {
 
     @FXML
     private void handleAddMatch() {
+        if (!session.canModifyData()) {
+            showToastWarning("You don't have permission to schedule matches!");
+            return;
+        }
+
         Sport sport = matchSportCombo.getValue();
         if (sport == null) {
-            showWarning("Selection Required", "Please select a sport first!");
+            showToastWarning("Please select a sport first!");
             matchSportCombo.requestFocus();
             return;
         }
@@ -585,48 +902,51 @@ public class MainController {
             LocalDate date = matchDatePicker.getValue();
             String location = locationField.getText().trim();
 
-            // Validation
             if (team1 == null || team2 == null || date == null || location.isEmpty()) {
-                showWarning("Validation Error", "Please fill all fields!");
+                showToastWarning("Please fill all fields!");
                 return;
             }
 
             if (team1.getId() == team2.getId()) {
-                showWarning("Invalid Selection", "Teams must be different!");
+                showToastWarning("Teams must be different!");
                 team2Combo.requestFocus();
                 return;
             }
 
             if (date.isBefore(LocalDate.now())) {
-                showWarning("Invalid Date", "Match date cannot be in the past!");
+                showToastWarning("Match date cannot be in the past!");
                 matchDatePicker.requestFocus();
                 return;
             }
 
             if (location.length() < 3) {
-                showWarning("Validation Error", "Location must be at least 3 characters!");
+                showToastWarning("Location must be at least 3 characters!");
                 locationField.requestFocus();
                 return;
             }
 
             Match match = new Match(team1.getName(), team2.getName(), date, location, sport.getId());
             matchDAO.addMatch(match);
-            DatabaseConnection.logAction("ADD", "matches", 0, "Scheduled: " + team1.getName() + " vs " + team2.getName());
 
             loadMatchesForSport(sport.getId());
             clearMatchFields();
-            showSuccess("Success", "Match scheduled successfully!");
+            showToastSuccess("Match scheduled successfully!");
         } catch (Exception e) {
-            showError("Error", "Failed to add match: " + e.getMessage());
+            showToastError("Failed to add match: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     @FXML
     private void handleUpdateResult() {
+        if (!session.canModifyData()) {
+            showToastWarning("You don't have permission to update match results!");
+            return;
+        }
+
         Match selected = matchesTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showWarning("Selection Required", "Please select a match from the table!");
+            showToastWarning("Please select a match from the table!");
             return;
         }
 
@@ -635,7 +955,7 @@ public class MainController {
             String score2Text = score2Field.getText().trim();
 
             if (score1Text.isEmpty() || score2Text.isEmpty()) {
-                showWarning("Validation Error", "Please enter scores for both teams!");
+                showToastWarning("Please enter scores for both teams!");
                 score1Field.requestFocus();
                 return;
             }
@@ -644,11 +964,10 @@ public class MainController {
             int score2 = Integer.parseInt(score2Text);
 
             if (score1 < 0 || score2 < 0) {
-                showWarning("Invalid Score", "Scores cannot be negative!");
+                showToastWarning("Scores cannot be negative!");
                 return;
             }
 
-            // Confirmation dialog
             Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
             confirm.setTitle("Confirm Result");
             confirm.setHeaderText("Update Match Result");
@@ -664,7 +983,6 @@ public class MainController {
 
             matchDAO.updateMatchResult(selected.getId(), score1, score2);
 
-            // Update team records and points
             if (score1 > score2) {
                 teamDAO.updateMatchResult(selected.getTeam1Name(), true, false, score1, score2);
                 teamDAO.updateMatchResult(selected.getTeam2Name(), false, false, score2, score1);
@@ -676,9 +994,6 @@ public class MainController {
                 teamDAO.updateMatchResult(selected.getTeam2Name(), false, true, score2, score1);
             }
 
-            DatabaseConnection.logAction("UPDATE", "matches", selected.getId(),
-                    String.format("Result: %s %d-%d %s", selected.getTeam1Name(), score1, score2, selected.getTeam2Name()));
-
             Sport sport = matchSportCombo.getValue();
             if (sport != null) {
                 loadMatchesForSport(sport.getId());
@@ -687,21 +1002,26 @@ public class MainController {
             }
 
             clearMatchFields();
-            showSuccess("Success", "Match result updated!\n\nStandings have been refreshed.");
+            showToastSuccess("Match result updated! Standings have been refreshed.");
         } catch (NumberFormatException e) {
-            showWarning("Invalid Input", "Please enter valid numeric scores!");
+            showToastWarning("Please enter valid numeric scores!");
             score1Field.requestFocus();
         } catch (Exception e) {
-            showError("Error", "Failed to update result: " + e.getMessage());
+            showToastError("Failed to update result: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     @FXML
     private void handleDeleteMatch() {
+        if (!session.isAdmin()) {
+            showToastWarning("Only administrators can delete matches!");
+            return;
+        }
+
         Match selected = matchesTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showWarning("Selection Required", "Please select a match to delete!");
+            showToastWarning("Please select a match to delete!");
             return;
         }
 
@@ -718,16 +1038,14 @@ public class MainController {
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
                 matchDAO.deleteMatch(selected.getId());
-                DatabaseConnection.logAction("DELETE", "matches", selected.getId(),
-                        "Deleted: " + selected.getTeam1Name() + " vs " + selected.getTeam2Name());
 
                 Sport sport = matchSportCombo.getValue();
                 if (sport != null) {
                     loadMatchesForSport(sport.getId());
                 }
-                showSuccess("Success", "Match deleted successfully!");
+                showToastSuccess("Match deleted successfully!");
             } catch (Exception e) {
-                showError("Error", "Failed to delete match: " + e.getMessage());
+                showToastError("Failed to delete match: " + e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -745,13 +1063,15 @@ public class MainController {
 
     private void loadMatchesForSport(int sportId) {
         try {
+            System.out.println("📊 Loading matches for sport ID: " + sportId);
             ObservableList<Match> matches = matchDAO.getMatchesBySport(sportId);
             filteredMatches = new FilteredList<>(matches, p -> true);
             SortedList<Match> sortedMatches = new SortedList<>(filteredMatches);
             sortedMatches.comparatorProperty().bind(matchesTable.comparatorProperty());
             matchesTable.setItems(sortedMatches);
+            System.out.println("✅ Loaded " + matches.size() + " matches");
         } catch (Exception e) {
-            showError("Error", "Failed to load matches: " + e.getMessage());
+            showToastError("Failed to load matches: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -766,23 +1086,509 @@ public class MainController {
     }
 
     // ============================================
-    // UTILITY METHODS
+    // TOURNAMENTS TAB METHODS (USER-SPECIFIC)
     // ============================================
 
-    private void showSuccess(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+    private void setupTournamentsTable() {
+        if (tournamentsTable == null) return;
+
+        tournamentIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        tournamentNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+        tournamentSportCol.setCellValueFactory(new PropertyValueFactory<>("sportName"));
+        tournamentTypeCol.setCellValueFactory(new PropertyValueFactory<>("tournamentType"));
+        tournamentStartDateCol.setCellValueFactory(new PropertyValueFactory<>("startDate"));
+        tournamentEndDateCol.setCellValueFactory(new PropertyValueFactory<>("endDate"));
+        tournamentStatusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
+        tournamentWinnerCol.setCellValueFactory(new PropertyValueFactory<>("winnerTeamName"));
+
+        // Style status column
+        tournamentStatusCol.setCellFactory(column -> new TableCell<Tournament, String>() {
+            @Override
+            protected void updateItem(String status, boolean empty) {
+                super.updateItem(status, empty);
+                if (empty || status == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(status.toUpperCase());
+                    String style = switch (status.toLowerCase()) {
+                        case "upcoming" -> "-fx-text-fill: #4299e1; -fx-font-weight: bold;";
+                        case "ongoing" -> "-fx-text-fill: #48bb78; -fx-font-weight: bold;";
+                        case "completed" -> "-fx-text-fill: #ed8936; -fx-font-weight: bold;";
+                        case "cancelled" -> "-fx-text-fill: #f56565; -fx-font-weight: bold;";
+                        default -> "";
+                    };
+                    setStyle(style);
+                }
+            }
+        });
+
+        // Selection listener
+        tournamentsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            selectedTournament = newVal;
+        });
+
+        // Double-click to edit
+        tournamentsTable.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2 && session.canModifyData()) {
+                Tournament selected = tournamentsTable.getSelectionModel().getSelectedItem();
+                if (selected != null) {
+                    loadTournamentForEditing(selected);
+                }
+            }
+        });
     }
 
-    private void showWarning(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+    @FXML
+    private void handleAddTournament() {
+        if (!session.canModifyData()) {
+            showToastWarning("You don't have permission to create tournaments!");
+            return;
+        }
+
+        try {
+            String name = tournamentNameField.getText().trim();
+            Sport sport = tournamentSportCombo2 != null ? tournamentSportCombo2.getValue() : null;
+            String type = tournamentTypeCombo.getValue();
+            LocalDate startDate = tournamentStartDatePicker.getValue();
+            LocalDate endDate = tournamentEndDatePicker.getValue();
+            String status = tournamentStatusCombo.getValue();
+            String prizeText = tournamentPrizeField.getText().trim();
+            String description = tournamentDescriptionArea != null ? tournamentDescriptionArea.getText().trim() : "";
+
+            // Validation
+            if (name.isEmpty()) {
+                showToastWarning("Tournament name cannot be empty!");
+                return;
+            }
+
+            if (sport == null) {
+                showToastWarning("Please select a sport!");
+                return;
+            }
+
+            if (type == null) {
+                showToastWarning("Please select tournament type!");
+                return;
+            }
+
+            if (startDate == null) {
+                showToastWarning("Please select start date!");
+                return;
+            }
+
+            if (status == null) {
+                status = "upcoming";
+            }
+
+            double prizeMoney = 0.0;
+            if (!prizeText.isEmpty()) {
+                try {
+                    prizeMoney = Double.parseDouble(prizeText);
+                } catch (NumberFormatException e) {
+                    showToastWarning("Invalid prize money amount!");
+                    return;
+                }
+            }
+
+            // Create tournament
+            Tournament tournament = new Tournament(name, sport.getId(), type, startDate);
+            tournament.setEndDate(endDate);
+            tournament.setStatus(status);
+            tournament.setDescription(description);
+            tournament.setPrizeMoney(prizeMoney);
+            tournament.setSportName(sport.getName());
+
+            tournamentDAO.addTournament(tournament);
+            loadTournaments();
+            clearTournamentFields();
+            showToastSuccess("Tournament '" + name + "' created successfully!");
+
+        } catch (Exception e) {
+            showToastError("Failed to create tournament: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleUpdateTournament() {
+        if (!session.canModifyData()) {
+            showToastWarning("You don't have permission to update tournaments!");
+            return;
+        }
+
+        Tournament selected = tournamentsTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showToastWarning("Please select a tournament to update!");
+            return;
+        }
+
+        try {
+            // Check ownership
+            if (!session.isAdmin() && !tournamentDAO.isOwner(selected.getId())) {
+                showToastWarning("You can only update tournaments you created!");
+                return;
+            }
+
+            String name = tournamentNameField.getText().trim();
+            String type = tournamentTypeCombo.getValue();
+            LocalDate startDate = tournamentStartDatePicker.getValue();
+            LocalDate endDate = tournamentEndDatePicker.getValue();
+            String status = tournamentStatusCombo.getValue();
+            String prizeText = tournamentPrizeField.getText().trim();
+            String description = tournamentDescriptionArea != null ? tournamentDescriptionArea.getText().trim() : "";
+            Team winner = tournamentWinnerCombo.getValue();
+
+            if (name.isEmpty() || type == null || startDate == null || status == null) {
+                showToastWarning("Please fill all required fields!");
+                return;
+            }
+
+            double prizeMoney = 0.0;
+            if (!prizeText.isEmpty()) {
+                prizeMoney = Double.parseDouble(prizeText);
+            }
+
+            selected.setName(name);
+            selected.setTournamentType(type);
+            selected.setStartDate(startDate);
+            selected.setEndDate(endDate);
+            selected.setStatus(status);
+            selected.setDescription(description);
+            selected.setPrizeMoney(prizeMoney);
+
+            if (winner != null) {
+                selected.setWinnerTeamId(winner.getId());
+                selected.setWinnerTeamName(winner.getName());
+            }
+
+            tournamentDAO.updateTournament(selected);
+            loadTournaments();
+            clearTournamentFields();
+            showToastSuccess("Tournament updated successfully!");
+
+        } catch (Exception e) {
+            showToastError("Failed to update tournament: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleDeleteTournament() {
+        if (!session.canModifyData()) {
+            showToastWarning("You don't have permission to delete tournaments!");
+            return;
+        }
+
+        Tournament selected = tournamentsTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showToastWarning("Please select a tournament to delete!");
+            return;
+        }
+
+        try {
+            // Check ownership
+            if (!session.isAdmin() && !tournamentDAO.isOwner(selected.getId())) {
+                showToastWarning("You can only delete tournaments you created!");
+                return;
+            }
+
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+            confirm.setTitle("Confirm Deletion");
+            confirm.setHeaderText("Delete Tournament: " + selected.getName());
+            confirm.setContentText("This will delete all associated data!\nAre you sure?");
+
+            Optional<ButtonType> result = confirm.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                tournamentDAO.deleteTournament(selected.getId());
+                loadTournaments();
+                showToastSuccess("Tournament deleted successfully!");
+            }
+        } catch (Exception e) {
+            showToastError("Failed to delete tournament: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleTournamentSportFilter() {
+        Sport sport = tournamentSportCombo.getValue();
+        if (sport != null) {
+            try {
+                ObservableList<Tournament> tournaments = tournamentDAO.getTournamentsBySport(sport.getId());
+                filteredTournaments = new FilteredList<>(tournaments, p -> true);
+                tournamentsTable.setItems(filteredTournaments);
+
+                // Load teams for winner selection
+                ObservableList<Team> teams = teamDAO.getTeamsBySport(sport.getId());
+                if (tournamentWinnerCombo != null) {
+                    tournamentWinnerCombo.setItems(teams);
+                }
+            } catch (Exception e) {
+                showToastError("Failed to load tournaments: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @FXML
+    private void handleManageTeams() {
+        Tournament selected = tournamentsTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showToastWarning("Please select a tournament first!");
+            return;
+        }
+
+        try {
+            // Check ownership
+            if (!session.isAdmin() && !tournamentDAO.isOwner(selected.getId())) {
+                showToastWarning("You can only manage teams for tournaments you created!");
+                return;
+            }
+
+            // Create team management dialog
+            Dialog<ButtonType> dialog = new Dialog<>();
+            dialog.setTitle("Manage Tournament Teams");
+            dialog.setHeaderText("Add/Remove teams for: " + selected.getName());
+
+            // Create layout
+            GridPane grid = new GridPane();
+            grid.setHgap(10);
+            grid.setVgap(10);
+            grid.setPadding(new Insets(20, 150, 10, 10));
+
+            // Available teams list
+            ListView<Team> availableTeams = new ListView<>();
+            ListView<Team> selectedTeams = new ListView<>();
+
+            // Load teams
+            ObservableList<Team> allTeams = teamDAO.getTeamsBySport(selected.getSportId());
+            ObservableList<Integer> tournamentTeamIds = tournamentDAO.getTournamentTeamIds(selected.getId());
+
+            ObservableList<Team> available = FXCollections.observableArrayList();
+            ObservableList<Team> inTournament = FXCollections.observableArrayList();
+
+            for (Team team : allTeams) {
+                if (tournamentTeamIds.contains(team.getId())) {
+                    inTournament.add(team);
+                } else {
+                    available.add(team);
+                }
+            }
+
+            availableTeams.setItems(available);
+            selectedTeams.setItems(inTournament);
+
+            // Buttons
+            Button addButton = new Button("Add →");
+            Button removeButton = new Button("← Remove");
+
+            addButton.setOnAction(e -> {
+                Team team = availableTeams.getSelectionModel().getSelectedItem();
+                if (team != null) {
+                    try {
+                        tournamentDAO.addTeamToTournament(selected.getId(), team.getId());
+                        available.remove(team);
+                        inTournament.add(team);
+                        showToastSuccess("Team added to tournament!");
+                    } catch (Exception ex) {
+                        showToastError("Failed to add team: " + ex.getMessage());
+                    }
+                }
+            });
+
+            removeButton.setOnAction(e -> {
+                Team team = selectedTeams.getSelectionModel().getSelectedItem();
+                if (team != null) {
+                    try {
+                        tournamentDAO.removeTeamFromTournament(selected.getId(), team.getId());
+                        inTournament.remove(team);
+                        available.add(team);
+                        showToastSuccess("Team removed from tournament!");
+                    } catch (Exception ex) {
+                        showToastError("Failed to remove team: " + ex.getMessage());
+                    }
+                }
+            });
+
+            // Layout
+            grid.add(new Label("Available Teams:"), 0, 0);
+            grid.add(new Label("Tournament Teams:"), 2, 0);
+            grid.add(availableTeams, 0, 1);
+            grid.add(new javafx.scene.layout.VBox(10, addButton, removeButton), 1, 1);
+            grid.add(selectedTeams, 2, 1);
+
+            dialog.getDialogPane().setContent(grid);
+            dialog.getDialogPane().getButtonTypes().addAll(ButtonType.CLOSE);
+            dialog.showAndWait();
+
+        } catch (Exception e) {
+            showToastError("Failed to manage teams: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleShowTournamentStats() {
+        Tournament selected = tournamentsTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showToastWarning("Please select a tournament first!");
+            return;
+        }
+
+        try {
+            String stats = tournamentDAO.getTournamentStats(selected.getId());
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Tournament Statistics");
+            alert.setHeaderText(selected.getName());
+            alert.setContentText(
+                    "Status: " + selected.getStatus().toUpperCase() + "\n" +
+                            "Type: " + selected.getTournamentType() + "\n" +
+                            "Start Date: " + selected.getStartDate() + "\n" +
+                            "End Date: " + (selected.getEndDate() != null ? selected.getEndDate() : "TBD") + "\n" +
+                            "Prize Money: $" + String.format("%.2f", selected.getPrizeMoney()) + "\n\n" +
+                            stats
+            );
+            alert.showAndWait();
+
+        } catch (Exception e) {
+            showToastError("Failed to load statistics: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void loadTournaments() {
+        try {
+            System.out.println("📊 Loading tournaments...");
+            ObservableList<Tournament> tournaments;
+
+            // Admin sees all tournaments, others see only their own
+            if (session.isAdmin()) {
+                tournaments = tournamentDAO.getAllTournaments();
+                System.out.println("✅ Loaded ALL tournaments (Admin view)");
+            } else {
+                tournaments = tournamentDAO.getMyTournaments();
+                System.out.println("✅ Loaded MY tournaments (User view)");
+            }
+
+            if (tournamentsTable != null) {
+                filteredTournaments = new FilteredList<>(tournaments, p -> true);
+                tournamentsTable.setItems(filteredTournaments);
+            }
+            System.out.println("✅ Loaded " + tournaments.size() + " tournaments");
+        } catch (Exception e) {
+            System.err.println("❌ Failed to load tournaments: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void loadTournamentForEditing(Tournament tournament) {
+        tournamentNameField.setText(tournament.getName());
+        tournamentTypeCombo.setValue(tournament.getTournamentType());
+        tournamentStartDatePicker.setValue(tournament.getStartDate());
+        tournamentEndDatePicker.setValue(tournament.getEndDate());
+        tournamentStatusCombo.setValue(tournament.getStatus());
+        tournamentPrizeField.setText(String.valueOf(tournament.getPrizeMoney()));
+
+        if (tournamentDescriptionArea != null) {
+            tournamentDescriptionArea.setText(tournament.getDescription());
+        }
+
+        // Set sport and load teams
+        try {
+            Sport sport = sportDAO.getSportById(tournament.getSportId());
+            if (tournamentSportCombo2 != null) {
+                tournamentSportCombo2.setValue(sport);
+            }
+            handleTournamentSportFilter();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void clearTournamentFields() {
+        if (tournamentNameField != null) tournamentNameField.clear();
+        if (tournamentTypeCombo != null) tournamentTypeCombo.setValue(null);
+        if (tournamentStartDatePicker != null) tournamentStartDatePicker.setValue(null);
+        if (tournamentEndDatePicker != null) tournamentEndDatePicker.setValue(null);
+        if (tournamentStatusCombo != null) tournamentStatusCombo.setValue(null);
+        if (tournamentPrizeField != null) tournamentPrizeField.clear();
+        if (tournamentDescriptionArea != null) tournamentDescriptionArea.clear();
+        if (tournamentWinnerCombo != null) tournamentWinnerCombo.setValue(null);
+    }
+
+
+    @FXML
+    private void handleJoinTournament() {
+        if (!session.isLoggedIn()) {
+            showToastWarning("Please login first!");
+            return;
+        }
+
+        Tournament selected = tournamentsTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showToastWarning("Please select a tournament to join!");
+            return;
+        }
+
+        if (!selected.getStatus().equalsIgnoreCase("upcoming")) {
+            showToastWarning("You can only join upcoming tournaments!");
+            return;
+        }
+
+        try {
+            // Check if user already joined
+            // You'll need to implement this in TournamentDAO
+            showToastInfo("Tournament join feature - coming soon!");
+
+            // Future implementation:
+            //TournamentDAO.joinTournament(selected.getId(), session.getCurrentUser().getId());
+            //showToastSuccess("Successfully joined tournament: " + selected.getName());
+
+        } catch (Exception e) {
+            showToastError("Failed to join tournament: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    // ============================================
+    // TOAST NOTIFICATION METHODS
+    // ============================================
+
+    private void showToastSuccess(String message) {
+        try {
+            Stage stage = (Stage) sportsTable.getScene().getWindow();
+            NotificationUtil.success(stage, message);
+        } catch (Exception e) {
+            System.err.println("Failed to show toast: " + e.getMessage());
+        }
+    }
+
+    private void showToastError(String message) {
+        try {
+            Stage stage = (Stage) sportsTable.getScene().getWindow();
+            NotificationUtil.error(stage, message);
+        } catch (Exception e) {
+            System.err.println("Failed to show toast: " + e.getMessage());
+        }
+    }
+
+    private void showToastWarning(String message) {
+        try {
+            Stage stage = (Stage) sportsTable.getScene().getWindow();
+            NotificationUtil.warning(stage, message);
+        } catch (Exception e) {
+            System.err.println("Failed to show toast: " + e.getMessage());
+        }
+    }
+
+    private void showToastInfo(String message) {
+        try {
+            Stage stage = (Stage) sportsTable.getScene().getWindow();
+            NotificationUtil.info(stage, message);
+        } catch (Exception e) {
+            System.err.println("Failed to show toast: " + e.getMessage());
+        }
     }
 
     private void showError(String title, String message) {

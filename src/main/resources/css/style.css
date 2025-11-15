@@ -1,5 +1,5 @@
 /* ===================================
-   DARK THEME - Sports Event Manager v2.0
+   DARK THEME - Sports Event Manager v3.0
    Production-Ready with Enhanced UX
    =================================== */
 
@@ -10,7 +10,9 @@
     -fx-font-smoothing-type: lcd;
 }
 
-/* Header - Vibrant Gradient */
+/* ==================
+   HEADER - Vibrant Gradient
+   ================== */
 .header {
     -fx-background-color: linear-gradient(to right, #667eea 0%, #764ba2 50%, #f093fb 100%);
     -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.4), 15, 0, 0, 5);
@@ -21,7 +23,7 @@
     -fx-font-size: 32px;
     -fx-font-weight: bold;
     -fx-text-fill: white;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 5, 0, 0, 2);
 }
 
 .section-title {
@@ -49,6 +51,164 @@
     -fx-border-width: 2;
 }
 
+/* ==================
+   LABELS
+   ================== */
+.label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #e0e0e0;
+}
+
+/* ==================
+   BUTTONS - Modern Gradient Style
+   ================== */
+.button {
+    -fx-padding: 10 25;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 5, 0, 0, 2);
+}
+
+.btn-primary {
+    -fx-background-color: linear-gradient(to bottom, #667eea, #5568d3);
+    -fx-text-fill: white;
+    -fx-border-color: #667eea;
+    -fx-border-width: 2;
+}
+
+.btn-primary:hover {
+    -fx-background-color: linear-gradient(to bottom, #7c8ff5, #667eea);
+    -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.6), 15, 0, 0, 3);
+}
+
+.btn-primary:pressed {
+    -fx-background-color: linear-gradient(to bottom, #5568d3, #4a5bc0);
+}
+
+.btn-success {
+    -fx-background-color: linear-gradient(to bottom, #48bb78, #38a169);
+    -fx-text-fill: white;
+    -fx-border-color: #48bb78;
+    -fx-border-width: 2;
+}
+
+.btn-success:hover {
+    -fx-background-color: linear-gradient(to bottom, #5cd68f, #48bb78);
+    -fx-effect: dropshadow(gaussian, rgba(72, 187, 120, 0.6), 15, 0, 0, 3);
+}
+
+.btn-success:pressed {
+    -fx-background-color: linear-gradient(to bottom, #38a169, #2f8659);
+}
+
+.btn-danger {
+    -fx-background-color: linear-gradient(to bottom, #f56565, #e53e3e);
+    -fx-text-fill: white;
+    -fx-border-color: #f56565;
+    -fx-border-width: 2;
+}
+
+.btn-danger:hover {
+    -fx-background-color: linear-gradient(to bottom, #ff7a7a, #f56565);
+    -fx-effect: dropshadow(gaussian, rgba(245, 101, 101, 0.6), 15, 0, 0, 3);
+}
+
+.btn-danger:pressed {
+    -fx-background-color: linear-gradient(to bottom, #e53e3e, #c92a2a);
+}
+
+.btn-warning {
+    -fx-background-color: linear-gradient(to bottom, #ed8936, #dd6b20);
+    -fx-text-fill: white;
+    -fx-border-color: #ed8936;
+    -fx-border-width: 2;
+}
+
+.btn-warning:hover {
+    -fx-background-color: linear-gradient(to bottom, #ff9f4b, #ed8936);
+    -fx-effect: dropshadow(gaussian, rgba(237, 137, 54, 0.6), 15, 0, 0, 3);
+}
+
+.btn-warning:pressed {
+    -fx-background-color: linear-gradient(to bottom, #dd6b20, #b85a1a);
+}
+
+.btn-info {
+    -fx-background-color: linear-gradient(to bottom, #4299e1, #3182ce);
+    -fx-text-fill: white;
+    -fx-border-color: #4299e1;
+    -fx-border-width: 2;
+}
+
+.btn-info:hover {
+    -fx-background-color: linear-gradient(to bottom, #63b3ed, #4299e1);
+    -fx-effect: dropshadow(gaussian, rgba(66, 153, 225, 0.6), 15, 0, 0, 3);
+}
+
+/* ==================
+   TEXT FIELDS - Enhanced Dark Mode
+   ================== */
+.text-field {
+    -fx-padding: 12;
+    -fx-font-size: 14px;
+    -fx-background-color: #2d2d2d;
+    -fx-text-fill: #ffffff;
+    -fx-prompt-text-fill: #808080;
+    -fx-border-color: #404040;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-border-width: 2;
+}
+
+.text-field:focused {
+    -fx-border-color: #667eea;
+    -fx-background-color: #353535;
+    -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.4), 10, 0, 0, 0);
+}
+
+.text-field:hover {
+    -fx-border-color: #505050;
+}
+
+/* ==================
+   TEXT AREA
+   ================== */
+.text-area {
+    -fx-padding: 12;
+    -fx-font-size: 14px;
+    -fx-background-color: #2d2d2d;
+    -fx-text-fill: #ffffff;
+    -fx-control-inner-background: #2d2d2d;
+    -fx-border-color: #404040;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-border-width: 2;
+}
+
+.text-area:focused {
+    -fx-border-color: #667eea;
+    -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.4), 10, 0, 0, 0);
+}
+
+.text-area .text {
+    -fx-text-fill: #ffffff;
+}
+
+/* ==================
+   COMBO BOX - Improved Styling
+   ================== */
+.combo-box {
+    -fx-background-color: #2d2d2d;
+    -fx-border-color: #404040;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-border-width: 2;
+    -fx-padding: 8;
+}
+
 .combo-box:hover {
     -fx-border-color: #505050;
 }
@@ -71,6 +231,8 @@
 
 .combo-box-popup .list-view .list-cell {
     -fx-padding: 8;
+    -fx-background-color: #2d2d2d;
+    -fx-text-fill: #ffffff;
 }
 
 .combo-box-popup .list-view .list-cell:hover {
@@ -91,6 +253,7 @@
     -fx-border-radius: 6;
     -fx-background-radius: 6;
     -fx-border-width: 2;
+    -fx-padding: 8;
 }
 
 .date-picker:focused {
@@ -101,6 +264,7 @@
 .date-picker .text-field {
     -fx-background-color: #2d2d2d;
     -fx-text-fill: #ffffff;
+    -fx-border-color: transparent;
 }
 
 .date-picker-popup {
@@ -122,17 +286,9 @@
     -fx-background-color: #404040;
 }
 
-.date-picker-popup .selected {
+.date-picker-popup .day-cell:selected {
     -fx-background-color: #667eea;
     -fx-text-fill: white;
-}
-
-/* ==================
-   LABELS - Light text on dark
-   ================== */
-.label {
-    -fx-font-size: 14px;
-    -fx-text-fill: #e0e0e0;
 }
 
 /* ==================
@@ -144,7 +300,7 @@
     -fx-border-radius: 8;
     -fx-background-radius: 8;
     -fx-border-width: 2;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0, 0, 3);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 10, 0, 0, 3);
 }
 
 .table-view .column-header {
@@ -200,10 +356,34 @@
     -fx-text-fill: white;
 }
 
-/* Empty table message */
 .table-view .placeholder .label {
     -fx-text-fill: #808080;
     -fx-font-size: 16px;
+}
+
+/* ==================
+   STANDINGS TABLE - Special Styling
+   ================== */
+.standings-table .table-row-cell {
+    -fx-border-color: #404040;
+    -fx-border-width: 0 0 1 0;
+}
+
+.standings-table .table-row-cell:selected {
+    -fx-background-color: linear-gradient(to right, #48bb78, #38a169);
+}
+
+/* Top 3 position highlighting - Gold, Silver, Bronze */
+.standings-table .table-row-cell:nth-row(1) {
+    -fx-background-color: rgba(255, 215, 0, 0.15);
+}
+
+.standings-table .table-row-cell:nth-row(2) {
+    -fx-background-color: rgba(192, 192, 192, 0.15);
+}
+
+.standings-table .table-row-cell:nth-row(3) {
+    -fx-background-color: rgba(205, 127, 50, 0.15);
 }
 
 /* ==================
@@ -306,6 +486,23 @@
 }
 
 /* ==================
+   SCROLL PANE
+   ================== */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.scroll-pane:focused {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+/* ==================
    CARD/PANEL Style
    ================== */
 .card {
@@ -315,68 +512,12 @@
     -fx-border-radius: 10;
     -fx-border-width: 2;
     -fx-padding: 20;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 8, 0, 0, 3);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 8, 0, 0, 3);
 }
 
 .card:hover {
     -fx-border-color: #667eea;
     -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.4), 12, 0, 0, 4);
-}
-
-/* ==================
-   STANDINGS TABLE - Special Styling
-   ================== */
-.standings-table .table-row-cell:filled {
-    -fx-border-color: #404040;
-    -fx-border-width: 0 0 1 0;
-}
-
-.standings-table .table-row-cell:filled:selected {
-    -fx-background-color: linear-gradient(to right, #48bb78, #38a169);
-}
-
-/* Top 3 position highlighting */
-.standings-table .table-row-cell:filled:nth-row(1) {
-    -fx-background-color: rgba(255, 215, 0, 0.15);
-}
-
-.standings-table .table-row-cell:filled:nth-row(2) {
-    -fx-background-color: rgba(192, 192, 192, 0.15);
-}
-
-.standings-table .table-row-cell:filled:nth-row(3) {
-    -fx-background-color: rgba(205, 127, 50, 0.15);
-}
-
-/* ==================
-   ALERT DIALOGS - Dark Theme
-   ================== */
-.alert {
-    -fx-background-color: #2d2d2d;
-}
-
-.alert .header-panel {
-    -fx-background-color: linear-gradient(to right, #667eea, #764ba2);
-}
-
-.alert .content {
-    -fx-background-color: #2d2d2d;
-}
-
-.alert .label {
-    -fx-text-fill: #ffffff;
-}
-
-/* ==================
-   SCROLL PANE
-   ================== */
-.scroll-pane {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-}
-
-.scroll-pane .viewport {
-    -fx-background-color: transparent;
 }
 
 /* ==================
@@ -417,7 +558,7 @@
 }
 
 /* ==================
-   PROGRESS BAR (for future features)
+   PROGRESS BAR
    ================== */
 .progress-bar {
     -fx-background-color: #2d2d2d;
@@ -434,20 +575,31 @@
 }
 
 /* ==================
-   ANIMATIONS & TRANSITIONS
+   ALERT DIALOGS - Dark Theme
    ================== */
-@keyframes fadeIn {
-    from { -fx-opacity: 0; }
-    to { -fx-opacity: 1; }
+.alert {
+    -fx-background-color: #2d2d2d;
 }
 
-@keyframes slideIn {
-    from { -fx-translate-y: -20; }
-    to { -fx-translate-y: 0; }
+.alert .header-panel {
+    -fx-background-color: linear-gradient(to right, #667eea, #764ba2);
+}
+
+.alert .content {
+    -fx-background-color: #2d2d2d;
+    -fx-padding: 20;
+}
+
+.alert .label {
+    -fx-text-fill: #ffffff;
+}
+
+.alert .button {
+    -fx-padding: 8 20;
 }
 
 /* ==================
-   ACCESSIBILITY IMPROVEMENTS
+   ACCESSIBILITY
    ================== */
 .button:focused,
 .text-field:focused,
@@ -456,127 +608,3 @@
     -fx-border-color: #667eea;
     -fx-border-width: 3;
 }
-
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-    .root {
-        -fx-background-color: #000000;
-    }
-
-    .text-field,
-    .combo-box {
-        -fx-border-width: 3;
-    }
-}
-2;
-}
-
-/* ==================
-   BUTTONS - Modern Gradient Style
-   ================== */
-.button {
-    -fx-padding: 10 25;
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-    -fx-cursor: hand;
-    -fx-background-radius: 8;
-    -fx-border-radius: 8;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);
-    -fx-transition: all 0.3s ease;
-}
-
-.btn-primary {
-    -fx-background-color: linear-gradient(to bottom, #667eea, #5568d3);
-    -fx-text-fill: white;
-    -fx-border-color: #667eea;
-    -fx-border-width: 2;
-}
-
-.btn-primary:hover {
-    -fx-background-color: linear-gradient(to bottom, #7c8ff5, #667eea);
-    -fx-scale-x: 1.05;
-    -fx-scale-y: 1.05;
-    -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.6), 15, 0, 0, 3);
-}
-
-.btn-primary:pressed {
-    -fx-scale-x: 0.98;
-    -fx-scale-y: 0.98;
-}
-
-.btn-success {
-    -fx-background-color: linear-gradient(to bottom, #48bb78, #38a169);
-    -fx-text-fill: white;
-    -fx-border-color: #48bb78;
-    -fx-border-width: 2;
-}
-
-.btn-success:hover {
-    -fx-background-color: linear-gradient(to bottom, #5cd68f, #48bb78);
-    -fx-scale-x: 1.05;
-    -fx-scale-y: 1.05;
-    -fx-effect: dropshadow(gaussian, rgba(72, 187, 120, 0.6), 15, 0, 0, 3);
-}
-
-.btn-danger {
-    -fx-background-color: linear-gradient(to bottom, #f56565, #e53e3e);
-    -fx-text-fill: white;
-    -fx-border-color: #f56565;
-    -fx-border-width: 2;
-}
-
-.btn-danger:hover {
-    -fx-background-color: linear-gradient(to bottom, #ff7a7a, #f56565);
-    -fx-scale-x: 1.05;
-    -fx-scale-y: 1.05;
-    -fx-effect: dropshadow(gaussian, rgba(245, 101, 101, 0.6), 15, 0, 0, 3);
-}
-
-.btn-warning {
-    -fx-background-color: linear-gradient(to bottom, #ed8936, #dd6b20);
-    -fx-text-fill: white;
-    -fx-border-color: #ed8936;
-    -fx-border-width: 2;
-}
-
-.btn-warning:hover {
-    -fx-background-color: linear-gradient(to bottom, #ff9f4b, #ed8936);
-    -fx-scale-x: 1.05;
-    -fx-scale-y: 1.05;
-    -fx-effect: dropshadow(gaussian, rgba(237, 137, 54, 0.6), 15, 0, 0, 3);
-}
-
-/* ==================
-   TEXT FIELDS - Enhanced Dark Mode
-   ================== */
-.text-field {
-    -fx-padding: 12;
-    -fx-font-size: 14px;
-    -fx-background-color: #2d2d2d;
-    -fx-text-fill: #ffffff;
-    -fx-prompt-text-fill: #808080;
-    -fx-border-color: #404040;
-    -fx-border-radius: 6;
-    -fx-background-radius: 6;
-    -fx-border-width: 2;
-}
-
-.text-field:focused {
-    -fx-border-color: #667eea;
-    -fx-background-color: #353535;
-    -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.4), 10, 0, 0, 0);
-}
-
-.text-field:hover {
-    -fx-border-color: #505050;
-}
-
-/* ==================
-   COMBO BOX - Improved Styling
-   ================== */
-.combo-box {
-    -fx-background-color: #2d2d2d;
-    -fx-border-color: #404040;
-    -fx-border-radius: 6;
-    -fx-background-radius: 6;
-    -fx-border-width:

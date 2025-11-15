@@ -6,12 +6,19 @@ import javafx.collections.ObservableList;
 import java.sql.*;
 import java.time.LocalDate;
 
+/**
+ * Data Access Object for Matches
+ * Compatible with both Supabase PostgreSQL and local SQLite
+ */
 public class MatchDAO {
 
     public void addMatch(Match match) throws SQLException {
-        String sql = "INSERT INTO matches (team1_name, team2_name, match_date, location, team1_score, team2_score, status, sport_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DatabaseConnection.getConnection();
+        String sql = "INSERT INTO matches (team1_name, team2_name, match_date, location, " +
+                "team1_score, team2_score, status, sport_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = SupabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setString(1, match.getTeam1Name());
             pstmt.setString(2, match.getTeam2Name());
             pstmt.setDate(3, Date.valueOf(match.getMatchDate()));
@@ -21,14 +28,17 @@ public class MatchDAO {
             pstmt.setString(7, match.getStatus());
             pstmt.setInt(8, match.getSportId());
             pstmt.executeUpdate();
+
+            System.out.println("✅ Match added: " + match.getTeam1Name() + " vs " + match.getTeam2Name());
         }
     }
 
     public ObservableList<Match> getAllMatches() throws SQLException {
         ObservableList<Match> matches = FXCollections.observableArrayList();
-        String sql = "SELECT * FROM matches ORDER BY match_date DESC";
+        String sql = "SELECT id, team1_name, team2_name, match_date, location, team1_score, " +
+                "team2_score, status, sport_id FROM matches ORDER BY match_date DESC";
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = SupabaseConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
@@ -36,16 +46,21 @@ public class MatchDAO {
                 Match match = createMatchFromResultSet(rs);
                 matches.add(match);
             }
+
+            System.out.println("✅ Loaded " + matches.size() + " matches");
         }
+
         return matches;
     }
 
     public ObservableList<Match> getMatchesBySport(int sportId) throws SQLException {
         ObservableList<Match> matches = FXCollections.observableArrayList();
-        String sql = "SELECT * FROM matches WHERE sport_id = ? ORDER BY match_date DESC";
+        String sql = "SELECT id, team1_name, team2_name, match_date, location, team1_score, " +
+                "team2_score, status, sport_id FROM matches WHERE sport_id = ? ORDER BY match_date DESC";
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = SupabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setInt(1, sportId);
             ResultSet rs = pstmt.executeQuery();
 
@@ -53,27 +68,38 @@ public class MatchDAO {
                 Match match = createMatchFromResultSet(rs);
                 matches.add(match);
             }
+
+            System.out.println("✅ Loaded " + matches.size() + " matches for sport ID: " + sportId);
         }
+
         return matches;
     }
 
     public void updateMatchResult(int matchId, int team1Score, int team2Score) throws SQLException {
         String sql = "UPDATE matches SET team1_score = ?, team2_score = ?, status = 'Completed' WHERE id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
+
+        try (Connection conn = SupabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setInt(1, team1Score);
             pstmt.setInt(2, team2Score);
             pstmt.setInt(3, matchId);
-            pstmt.executeUpdate();
+            int rowsAffected = pstmt.executeUpdate();
+
+            System.out.println("✅ Match result updated (ID: " + matchId + ", rows: " + rowsAffected + ")");
         }
     }
 
     public void deleteMatch(int matchId) throws SQLException {
         String sql = "DELETE FROM matches WHERE id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
+
+        try (Connection conn = SupabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setInt(1, matchId);
-            pstmt.executeUpdate();
+            int rowsAffected = pstmt.executeUpdate();
+
+            System.out.println("✅ Match deleted (rows affected: " + rowsAffected + ")");
         }
     }
 
